@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Button, Linking, Image, TouchableOpacity, Scrol
 import PlantaoFarma from './components/PlantaoFarma';
 import mapIcon from './assets/icon.png';
 
+
 export default function App() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -84,7 +85,7 @@ export default function App() {
             <Text style={styles.alertText}>ATENÇÃO!</Text>
             <Text style={styles.alertSubText}>FARMÁCIA DE PLANTÃO 25/04/2024:</Text>
             <Text style={styles.pharmacyName}>FARMÁCIA SÃO JOAQUIM</Text>
-            <Text style={styles.address}>RUA MARIA MARTA, 23 - JARDIM NOVA BARRA</Text>
+            <Text style={styles.address}>RUA MARIA MARTA, 29 - JARDIM NOVA BARRA</Text>
             <Text style={styles.phone}>(14) 3604-4588</Text>
           </View>
           <TouchableOpacity style={styles.callButton} onPress={() => Linking.openURL('tel:1436044588')}>
@@ -94,7 +95,7 @@ export default function App() {
             <Text style={styles.mapButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
           </TouchableOpacity>
           {showLocateButton ? (
-            <Button title="Localizar" onPress={getLocation} color="#4CAF50" />
+            <Button title="Localizar" onPress={getLocation} color="#a80000"/>
           ) : (
             <Button title="Voltar" onPress={goBack} color="#FF5733" />
           )}
@@ -110,7 +111,7 @@ export default function App() {
               ))}
             </ScrollView>
           )}
-          <Button title="Ver Farmácia de Plantão" onPress={() => setShowPlantaoFarma(true)} color="#FFA500" />
+          <Button title="Ver Farmácia de Plantão" onPress={() => setShowPlantaoFarma(true)} color="#a80000" />
         </>
       )}
     </View>
@@ -128,13 +129,13 @@ const getPharmacies = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#D9DBD9',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   alertContainer: {
-    backgroundColor: '#FF0000',
+    backgroundColor: '#a80000',
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   callButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#a80000',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   mapButton: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#a80000',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',

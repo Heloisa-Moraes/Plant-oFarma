@@ -1,7 +1,12 @@
+1º faz esse comando: 
+ 
  npm i 
 
 
- npx expo start
+
+2º comando para inicializar o andoid diretamente no celular e visualizar o app: 
+
+ npx expo start   --localhost --android
 
  pressionar o A para selecionar a imagem no celular
   
