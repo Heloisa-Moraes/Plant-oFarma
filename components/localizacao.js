@@ -12,13 +12,36 @@ export default function Localizacao() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#E0E1E0',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  topCircle: {
+    width: '100%',
+    height: 150,
+    backgroundColor: '#a80000',
+    borderBottomLeftRadius: 150,
+    borderBottomRightRadius: 150,
+    position: 'absolute',
+    top: 0,
+  },
+  bottomCircle: {
+    width: '100%',
+    height: 150,
+    backgroundColor: '#a80000',
+    borderTopLeftRadius: 150,
+    borderTopRightRadius: 150,
+    position: 'absolute',
+    bottom: 0,
+  },
+  content: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-  },
-  text: {
-    fontSize: 18,
-    color: '#333',
-    textAlign: 'center',
+    paddingHorizontal: 20,
   },
 });
+
+
+
+

@@ -10,7 +10,7 @@ import Menu from './components/menu';
 const Stack = createStackNavigator();
 
 function AberturaScreen({ navigation }) {
-  // Navega automaticamente para a tela de Informacao após 3 segundos
+  // Navega automaticamente para a tela de Localização após 3 segundos
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Localizacao'); // Usando replace para que o usuário não possa voltar para a tela de abertura
@@ -22,17 +22,18 @@ function AberturaScreen({ navigation }) {
   return <Abertura />;
 }
 
-/* function LocalizacaoScreen({ navigation }) {
+function LocalizacaoScreen({ navigation }) {
+  // Navega automaticamente para a tela de Informacao após 3 segundos
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Informacao'); // Navega para Informação após 3 segundos
-    }, 3000);
+      navigation.replace('Informacao'); // Navega para a tela de informação após 3 segundos
+    }, 3000); // 3 segundos de espera
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); // Limpa o timer quando o componente é desmontado
   }, [navigation]);
 
-  return <Localizacao />; 
-  } */
+  return <Localizacao />;
+}
 
 function HomeScreen({ navigation }) {
   const [latitude, setLatitude] = useState(null);
@@ -138,7 +139,6 @@ function HomeScreen({ navigation }) {
             </ScrollView>
           )}
           <Button title="Ver Farmácia de Plantão" onPress={() => setShowPlantaoFarma(true)} color="#a80000" />
-          {/* Adicione os botões para navegar para as outras telas */}
           <Button title="Ir para Localização" onPress={() => navigation.navigate('Localizacao')} color="#007bff" />
           <Button title="Ir para Informação" onPress={() => navigation.navigate('Informacao')} color="#007bff" />
           <Button title="Ir para Menu" onPress={() => navigation.navigate('Menu')} color="#007bff" />
@@ -154,7 +154,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="AberturaScreen">
         <Stack.Screen name="AberturaScreen" component={AberturaScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Localizacao" component={Localizacao} />
+        <Stack.Screen name="Localizacao" component={LocalizacaoScreen} />
         <Stack.Screen name="Informacao" component={Informacao} />
         <Stack.Screen name="Menu" component={Menu} />
       </Stack.Navigator>
