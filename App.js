@@ -1,10 +1,40 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, Linking, Image, TouchableOpacity, ScrollView } from 'react-native';
-import PlantaoFarma from './components/PlantaoFarma';
-import mapIcon from './assets/icon.png';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, ScrollView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Abertura from './components/abertura';
+import Informacao from './components/informacao';
+import Localizacao from './components/localizacao';
+import Menu from './components/menu';
 
+const Stack = createStackNavigator();
 
-export default function App() {
+function AberturaScreen({ navigation }) {
+  // Navega automaticamente para a tela de Informacao após 3 segundos
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.replace('Localizacao'); // Usando replace para que o usuário não possa voltar para a tela de abertura
+    }, 3000); // 3 segundos
+
+    return () => clearTimeout(timer); // Limpa o timer quando o componente é desmontado
+  }, [navigation]);
+
+  return <Abertura />;
+}
+
+/* function LocalizacaoScreen({ navigation }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.replace('Informacao'); // Navega para Informação após 3 segundos
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
+
+  return <Localizacao />; 
+  } */
+
+function HomeScreen({ navigation }) {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [pharmacies, setPharmacies] = useState([]);
@@ -40,7 +70,7 @@ export default function App() {
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // raio da Terra em km
     const dLat = toRadians(lat2 - lat1);
-    const dLon = toRadians(lat2 - lon1);
+    const dLon = toRadians(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
@@ -61,10 +91,6 @@ export default function App() {
     } else {
       alert('Por favor, selecione uma farmácia.');
     }
-  };
-
-  const selectPharmacy = (pharmacy) => {
-    setSelectedPharmacy(pharmacy);
   };
 
   const goBack = () => {
@@ -112,9 +138,27 @@ export default function App() {
             </ScrollView>
           )}
           <Button title="Ver Farmácia de Plantão" onPress={() => setShowPlantaoFarma(true)} color="#a80000" />
+          {/* Adicione os botões para navegar para as outras telas */}
+          <Button title="Ir para Localização" onPress={() => navigation.navigate('Localizacao')} color="#007bff" />
+          <Button title="Ir para Informação" onPress={() => navigation.navigate('Informacao')} color="#007bff" />
+          <Button title="Ir para Menu" onPress={() => navigation.navigate('Menu')} color="#007bff" />
         </>
       )}
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="AberturaScreen">
+        <Stack.Screen name="AberturaScreen" component={AberturaScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Localizacao" component={Localizacao} />
+        <Stack.Screen name="Informacao" component={Informacao} />
+        <Stack.Screen name="Menu" component={Menu} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
