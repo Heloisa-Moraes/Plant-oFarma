@@ -4,7 +4,16 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function Localizacao() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Permitir que "PlantãoFarma" use a sua localização?</Text>
+      {/* Círculo superior */}
+      <View style={styles.topCircle} />
+      
+      {/* Conteúdo central */}
+      <View style={styles.content}>
+        <Text style={styles.text}>Permitir que "PlantãoFarma" use a sua localização?</Text>
+      </View>
+
+      {/* Círculo inferior */}
+      <View style={styles.bottomCircle} />
     </View>
   );
 }
@@ -18,19 +27,19 @@ const styles = StyleSheet.create({
   },
   topCircle: {
     width: '100%',
-    height: 150,
+    height: 200,
     backgroundColor: '#a80000',
-    borderBottomLeftRadius: 150,
-    borderBottomRightRadius: 150,
+    borderBottomLeftRadius: 200,
+    borderBottomRightRadius: 200,
     position: 'absolute',
     top: 0,
   },
   bottomCircle: {
     width: '100%',
-    height: 150,
+    height: 200,
     backgroundColor: '#a80000',
-    borderTopLeftRadius: 150,
-    borderTopRightRadius: 150,
+    borderTopLeftRadius: 200,
+    borderTopRightRadius: 200,
     position: 'absolute',
     bottom: 0,
   },
@@ -39,9 +48,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    zIndex: 1,  // Garante que o conteúdo fique sobre os círculos
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
   },
 });
-
-
-
-

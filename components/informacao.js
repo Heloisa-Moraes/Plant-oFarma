@@ -4,9 +4,28 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function Informacao() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Farmácia de Plantão 25/04/2024: Farmácia São Joaquim</Text>
-      <Text style={styles.subtext}>Endereço: Rua Maria Marta, 23 - Jardim Nova Barra</Text>
-      <Text style={styles.subtext}>Telefone: (14) 3604-0000</Text>
+      <View style={styles.topCircle}></View>
+
+      <View style={styles.alertContainer}>
+        <View style={styles.iconContainer}>
+          {/* O ícone de alerta será adicionado aqui */}
+        </View>
+        <Text style={styles.text}>ATENÇÃO!</Text>
+        <Text style={styles.text}>Farmácia de Plantão 25/04/2024:</Text>
+        <Text style={styles.text}>Farmácia São Joaquim</Text>
+        <Text style={styles.subtext}>Endereço: Rua Maria Marta, 23 - Jardim Nova Barra</Text>
+        <Text style={styles.subtext}>Telefone: (14) 3604-0000</Text>
+      </View>
+
+      <View style={styles.callButton}>
+        <Text style={styles.callButtonText}>CLIQUE PARA LIGAR</Text>
+      </View>
+
+      <View style={styles.mapButton}>
+        <Text style={styles.mapButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+      </View>
+
+      <View style={styles.bottomCircle}></View>
     </View>
   );
 }
@@ -14,10 +33,27 @@ export default function Informacao() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#E0E1E0',
     alignItems: 'center',
-    backgroundColor: '#D9DBD9',
-    padding: 20,
+    justifyContent: 'space-between',
+  },
+  topCircle: {
+    width: '100%',
+    height: 150,
+    backgroundColor: '#A80000',
+    borderBottomLeftRadius: 150,
+    borderBottomRightRadius: 150,
+    position: 'absolute',
+    top: 0,
+  },
+  bottomCircle: {
+    width: '100%',
+    height: 150,
+    backgroundColor: '#A80000',
+    borderTopLeftRadius: 150,
+    borderTopRightRadius: 150,
+    position: 'absolute',
+    bottom: 0,
   },
   alertContainer: {
     backgroundColor: '#A80000',
@@ -31,9 +67,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+    marginTop: 180, // Para ajustar o espaço entre o círculo superior e o conteúdo
   },
   iconContainer: {
-    backgroundColor: '#0029FF', // cor do ícone de alerta
+    backgroundColor: '#0029FF', // Cor do ícone de alerta
     padding: 10,
     borderRadius: 50,
     position: 'absolute',
@@ -79,3 +116,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
