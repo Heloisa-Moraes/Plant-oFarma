@@ -1,0 +1,2 @@
+po cara, você fez as alterações mas não funcionou, olha como a tela ficou!!! a primeira imagem é como está agora, e a segunda é como é para ficar! 
+Ignore o horário e a bateria pq são nativos, mas tem um ponto que esquecemos também de informar que seria o botão superior direito, que abre a próxima tela, que seria a imagem 3 que mandei aqui, no nosso código é o menu.js, mande também o menu de acordo com a terceira imagem que mandei aqui, já com a ação na tela de informações no botão superior direito para abrir o menu.js

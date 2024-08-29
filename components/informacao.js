@@ -1,14 +1,73 @@
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Alert, Linking } from 'react-native';
+import * as Location from 'expo-location';
+import * as IntentLauncher from 'expo-intent-launcher';
 
 export default function Informacao() {
+  const handlePhoneCall = async () => {
+    // Permissão para fazer a ligação
+    Alert.alert(
+      "Permissão para Ligação",
+      "Deseja permitir que o aplicativo faça uma ligação?",
+      [
+        {
+          text: "Permitir",
+          onPress: () => {
+            const phoneNumber = "tel:+551436040000"; // Número da Farmácia
+            Linking.openURL(phoneNumber);
+          }
+        },
+        {
+          text: "Negar",
+          style: "cancel"
+        }
+      ]
+    );
+  };
+
+  const handleOpenMap = async () => {
+    // Pedir permissão de localização
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permissão Negada', 'Permissão para acessar a localização foi negada.');
+      return;
+    }
+
+    // Coordenadas ou endereço
+    const latitude = -22.46997; // Exemplo de coordenadas
+    const longitude = -48.55892; // Exemplo de coordenadas
+
+    // Perguntar se quer abrir no Google Maps ou Waze
+    Alert.alert(
+      "Abrir Mapa",
+      "Deseja abrir o mapa no Google Maps ou Waze?",
+      [
+        {
+          text: "Google Maps",
+          onPress: () => {
+            const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Waze",
+          onPress: () => {
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            Linking.openURL(url);
+          }
+        },
+        { text: "Cancelar", style: "cancel" }
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topCircle}></View>
 
       <View style={styles.alertContainer}>
         <View style={styles.iconContainer}>
-          {/* O ícone de alerta será adicionado aqui */}
+          {/* Ícone de alerta pode ser adicionado aqui */}
         </View>
         <Text style={styles.text}>ATENÇÃO!</Text>
         <Text style={styles.text}>Farmácia de Plantão 25/04/2024:</Text>
@@ -17,12 +76,22 @@ export default function Informacao() {
         <Text style={styles.subtext}>Telefone: (14) 3604-0000</Text>
       </View>
 
-      <View style={styles.callButton}>
+      {/* Botão para ligação */}
+      <TouchableOpacity style={styles.callButton} onPress={handlePhoneCall}>
         <Text style={styles.callButtonText}>CLIQUE PARA LIGAR</Text>
-      </View>
+      </TouchableOpacity>
 
-      <View style={styles.mapButton}>
-        <Text style={styles.mapButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+      {/* Botão para abrir no mapa com imagem de fundo */}
+      <View style={styles.mapContainer}>
+        <ImageBackground
+          source={require('../img/mapa.png')} // Caminho para a imagem dentro da pasta img
+          style={styles.mapButton}
+          imageStyle={styles.mapImage}
+        >
+          <TouchableOpacity onPress={handleOpenMap} style={styles.mapButtonOverlay}>
+            <Text style={styles.mapButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+          </TouchableOpacity>
+        </ImageBackground>
       </View>
 
       <View style={styles.bottomCircle}></View>
@@ -67,7 +136,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
-    marginTop: 180, // Para ajustar o espaço entre o círculo superior e o conteúdo
+    marginTop: 180, // Ajusta o espaço entre o círculo superior e o conteúdo
   },
   iconContainer: {
     backgroundColor: '#0029FF', // Cor do ícone de alerta
@@ -103,17 +172,31 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  mapButton: {
-    backgroundColor: '#FD2A2A',
-    padding: 15,
-    borderRadius: 10,
+  mapContainer: {
+    width: '100%',
     alignItems: 'center',
+    marginBottom: 20,
+  },
+  mapButton: {
     width: '80%',
+    height: 70, // Altura do botão com fundo de mapa
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  mapButtonOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   mapButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  mapImage: {
+    borderRadius: 10,
+    opacity: 0.9,
   },
 });
-
