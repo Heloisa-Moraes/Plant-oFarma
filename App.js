@@ -152,11 +152,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="AberturaScreen">
-        <Stack.Screen name="AberturaScreen" component={AberturaScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Localizacao" component={LocalizacaoScreen} />
-        <Stack.Screen name="Informacao" component={Informacao} />
-        <Stack.Screen name="Menu" component={Menu} />
+        <Stack.Screen name="AberturaScreen" component={AberturaScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }}/>
+        <Stack.Screen name="Localizacao" component={LocalizacaoScreen}  options={{ headerShown: false }}/>
+        <Stack.Screen name="Informacao" component={Informacao}  options={{ headerShown: false }}/>
+        <Stack.Screen name="Menu" component={Menu}  options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

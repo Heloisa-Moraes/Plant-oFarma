@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Alert, Linking } from 'react-native';
 import * as Location from 'expo-location';
-import * as IntentLauncher from 'expo-intent-launcher';
 
 export default function Informacao() {
   const handlePhoneCall = async () => {
-    // Permissão para fazer a ligação
     Alert.alert(
       "Permissão para Ligação",
       "Deseja permitir que o aplicativo faça uma ligação?",
@@ -13,7 +11,7 @@ export default function Informacao() {
         {
           text: "Permitir",
           onPress: () => {
-            const phoneNumber = "tel:+551436040000"; // Número da Farmácia
+            const phoneNumber = "tel:+551436040000";
             Linking.openURL(phoneNumber);
           }
         },
@@ -26,18 +24,15 @@ export default function Informacao() {
   };
 
   const handleOpenMap = async () => {
-    // Pedir permissão de localização
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permissão Negada', 'Permissão para acessar a localização foi negada.');
       return;
     }
 
-    // Coordenadas ou endereço
-    const latitude = -22.46997; // Exemplo de coordenadas
-    const longitude = -48.55892; // Exemplo de coordenadas
+    const latitude = -22.46997;
+    const longitude = -48.55892;
 
-    // Perguntar se quer abrir no Google Maps ou Waze
     Alert.alert(
       "Abrir Mapa",
       "Deseja abrir o mapa no Google Maps ou Waze?",
@@ -66,9 +61,6 @@ export default function Informacao() {
       <View style={styles.topCircle}></View>
 
       <View style={styles.alertContainer}>
-        <View style={styles.iconContainer}>
-          {/* Ícone de alerta pode ser adicionado aqui */}
-        </View>
         <Text style={styles.text}>ATENÇÃO!</Text>
         <Text style={styles.text}>Farmácia de Plantão 25/04/2024:</Text>
         <Text style={styles.text}>Farmácia São Joaquim</Text>
@@ -76,25 +68,25 @@ export default function Informacao() {
         <Text style={styles.subtext}>Telefone: (14) 3604-0000</Text>
       </View>
 
-      {/* Botão para ligação */}
       <TouchableOpacity style={styles.callButton} onPress={handlePhoneCall}>
         <Text style={styles.callButtonText}>CLIQUE PARA LIGAR</Text>
       </TouchableOpacity>
 
-      {/* Botão para abrir no mapa com imagem de fundo */}
+      {/* Ajuste da imagem de fundo respeitando o formato do círculo */}
       <View style={styles.mapContainer}>
-        <ImageBackground
-          source={require('../img/mapa.png')} // Caminho para a imagem dentro da pasta img
-          style={styles.mapButton}
-          imageStyle={styles.mapImage}
-        >
-          <TouchableOpacity onPress={handleOpenMap} style={styles.mapButtonOverlay}>
-            <Text style={styles.mapButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
-          </TouchableOpacity>
-        </ImageBackground>
+        <View style={styles.bottomCircle}>
+          <ImageBackground
+            source={require('../img/mapa.png')}
+            style={styles.mapButton}
+            imageStyle={styles.mapImage}
+          >
+            {/* Botão do mapa alterado para ter o mesmo estilo do botão de ligação */}
+            <TouchableOpacity onPress={handleOpenMap} style={styles.callButton}>
+              <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+            </TouchableOpacity>
+          </ImageBackground>
+        </View>
       </View>
-
-      <View style={styles.bottomCircle}></View>
     </View>
   );
 }
@@ -115,15 +107,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
   },
-  bottomCircle: {
-    width: '100%',
-    height: 150,
-    backgroundColor: '#A80000',
-    borderTopLeftRadius: 150,
-    borderTopRightRadius: 150,
-    position: 'absolute',
-    bottom: 0,
-  },
   alertContainer: {
     backgroundColor: '#A80000',
     padding: 20,
@@ -136,15 +119,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
-    marginTop: 180, // Ajusta o espaço entre o círculo superior e o conteúdo
-  },
-  iconContainer: {
-    backgroundColor: '#0029FF', // Cor do ícone de alerta
-    padding: 10,
-    borderRadius: 50,
-    position: 'absolute',
-    top: -40,
-    zIndex: 1,
+    marginTop: 180,
   },
   text: {
     fontSize: 22,
@@ -174,20 +149,30 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: '100%',
+    height: 200,
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 20,
+    zIndex: 1,
+  },
+  bottomCircle: {
+    width: '100%',
+    height: 200,
+    backgroundColor: '#A80000',
+    borderTopLeftRadius: 150,
+    borderTopRightRadius: 150,
+    overflow: 'hidden', // Para que a imagem se encaixe no círculo
   },
   mapButton: {
-    width: '80%',
-    height: 70, // Altura do botão com fundo de mapa
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
   },
   mapButtonOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 2,
   },
   mapButtonText: {
     color: '#FFFFFF',
@@ -196,7 +181,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   mapImage: {
-    borderRadius: 10,
     opacity: 0.9,
   },
 });
