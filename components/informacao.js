@@ -1,8 +1,12 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Alert, Linking } from 'react-native';
 import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Informacao() {
+  const navigation = useNavigation();
+
   const handlePhoneCall = async () => {
     Alert.alert(
       "Permissão para Ligação",
@@ -56,9 +60,17 @@ export default function Informacao() {
     );
   };
 
+  const handleMenuPress = () => {
+    navigation.navigate('Menu');
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.topCircle}></View>
+      <View style={styles.topCircle}>
+        <TouchableOpacity style={styles.menuButton} onPress={handleMenuPress}>
+          <Ionicons name="menu" size={32} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.alertContainer}>
         <Text style={styles.text}>ATENÇÃO!</Text>
@@ -72,7 +84,6 @@ export default function Informacao() {
         <Text style={styles.callButtonText}>CLIQUE PARA LIGAR</Text>
       </TouchableOpacity>
 
-      {/* Ajuste da imagem de fundo respeitando o formato do círculo */}
       <View style={styles.mapContainer}>
         <View style={styles.bottomCircle}>
           <ImageBackground
@@ -80,7 +91,6 @@ export default function Informacao() {
             style={styles.mapButton}
             imageStyle={styles.mapImage}
           >
-            {/* Botão do mapa alterado para ter o mesmo estilo do botão de ligação */}
             <TouchableOpacity onPress={handleOpenMap} style={styles.callButton}>
               <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
             </TouchableOpacity>
@@ -106,6 +116,15 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 150,
     position: 'absolute',
     top: 0,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingRight: 20,
+    paddingTop: 20,
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
   },
   alertContainer: {
     backgroundColor: '#A80000',
@@ -160,25 +179,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#A80000',
     borderTopLeftRadius: 150,
     borderTopRightRadius: 150,
-    overflow: 'hidden', // Para que a imagem se encaixe no círculo
+    overflow: 'hidden',
   },
   mapButton: {
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  mapButtonOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  mapButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   mapImage: {
     opacity: 0.9,

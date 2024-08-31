@@ -1,2 +1,11 @@
-po cara, você fez as alterações mas não funcionou, olha como a tela ficou!!! a primeira imagem é como está agora, e a segunda é como é para ficar! 
-Ignore o horário e a bateria pq são nativos, mas tem um ponto que esquecemos também de informar que seria o botão superior direito, que abre a próxima tela, que seria a imagem 3 que mandei aqui, no nosso código é o menu.js, mande também o menu de acordo com a terceira imagem que mandei aqui, já com a ação na tela de informações no botão superior direito para abrir o menu.js
+Ficou ótimo, você arrasou! Agora, preciso que você adicione o botão no canto superior direito na tela de menu também (com a função de voltar para a tela anterior informação.js) , igual ele existe na tela de informação.js... 
+
+Agora no menu.js, existem 3 botões, quero que você configure eles para abrir de acordo com as 3 próximas telas.
+
+Mandei o print para você me auxiliar na criação dessas telas, que serão : 
+
+telefones.js
+urgencia.js
+farmacias.js
+
+mande os códigos de cada uma delas, configurado já na tela de menus, e também preciso do botão de voltar em cada uma dessas telas funcionando, quando estiver dentro de cada uma dessas telas o botão voltar terá a ação de voltar para a tela de menu, já na tela menu o botão voltar terá a ação de voltar para a tela de informações

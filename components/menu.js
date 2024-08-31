@@ -1,12 +1,56 @@
 import * as React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
-export default function Menu({ navigation }) {
+export default function Menu() {
+  const navigation = useNavigation();
+
+  const handleNavigate = (screen) => {
+    navigation.navigate(screen); // Navega para a tela correspondente
+  };
+
+  const handleBackPress = () => {
+    navigation.goBack(); // Voltar para a tela de informação
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Menu</Text>
-      <Button title="Ir para Localização" onPress={() => navigation.navigate('Localizacao')} />
-      <Button title="Ir para Informação" onPress={() => navigation.navigate('Informacao')} />
+      <View style={styles.topCircle}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+          <Ionicons name="arrow-back" size={32} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.menuContainer}>
+        <TouchableOpacity 
+          style={styles.menuItem} 
+          onPress={() => handleNavigate('Telefones')}
+        >
+          <Ionicons name="call" size={24} color="white" />
+          <Text style={styles.menuText}>TELEFONES ÚTEIS</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.menuItem} 
+          onPress={() => handleNavigate('Urgencia')}
+        >
+          <Ionicons name="medkit" size={24} color="white" />
+          <Text style={styles.menuText}>URGÊNCIA</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.menuItem} 
+          onPress={() => handleNavigate('Farmacias')}
+        >
+          <Ionicons name="home" size={24} color="white" />
+          <Text style={styles.menuText}>+FARMÁCIAS</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.plusButtonContainer}>
+        <Ionicons name="add-circle-outline" size={64} color="white" />
+      </View>
     </View>
   );
 }
@@ -14,12 +58,45 @@ export default function Menu({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#E0E1E0',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+    justifyContent: 'space-between',
   },
-  text: {
-    fontSize: 24,
+  topCircle: {
+    width: '100%',
+    height: 150,
+    backgroundColor: '#A80000',
+    borderBottomLeftRadius: 150,
+    borderBottomRightRadius: 150,
+    position: 'absolute',
+    top: 0,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+  },
+  menuContainer: {
+    marginTop: 180,
+    width: '80%',
+  },
+  menuItem: {
+    backgroundColor: '#A80000',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
     marginBottom: 20,
+    flexDirection: 'row',
+  },
+  menuText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  plusButtonContainer: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
   },
 });

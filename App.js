@@ -6,6 +6,9 @@ import Abertura from './components/abertura';
 import Informacao from './components/informacao';
 import Localizacao from './components/localizacao';
 import Menu from './components/menu';
+import Farmacias from './components/farmacias';
+import Urgencia from './components/urgencia';
+import Telefones from './components/telefones'; // Importação da tela Telefones
 
 const Stack = createStackNavigator();
 
@@ -157,6 +160,9 @@ export default function App() {
         <Stack.Screen name="Localizacao" component={LocalizacaoScreen}  options={{ headerShown: false }}/>
         <Stack.Screen name="Informacao" component={Informacao}  options={{ headerShown: false }}/>
         <Stack.Screen name="Menu" component={Menu}  options={{ headerShown: false }}/>
+        <Stack.Screen name="Telefones" component={Telefones} options={{ headerShown: false }}/>
+        <Stack.Screen name="Urgencia" component={Urgencia} options={{ headerShown: false }}/>  
+        <Stack.Screen name="Farmacias" component={Farmacias} options={{ headerShown: false }}/> 
       </Stack.Navigator>
     </NavigationContainer>
   );
