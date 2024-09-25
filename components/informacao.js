@@ -1,41 +1,63 @@
-import * as React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Alert, Linking } from 'react-native';
-import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios'; 
+import API_KEY from '../config'; 
+import { LocationContext } from '../contexts/LocationContext'; 
 
 export default function Informacao() {
   const navigation = useNavigation();
+  const { location } = useContext(LocationContext); // Corrigido para acessar corretamente o objeto location
 
-  const handlePhoneCall = async () => {
-    Alert.alert(
-      "Permissão para Ligação",
-      "Deseja permitir que o aplicativo faça uma ligação?",
-      [
-        {
-          text: "Permitir",
-          onPress: () => {
-            const phoneNumber = "tel:+551436040000";
-            Linking.openURL(phoneNumber);
-          }
-        },
-        {
-          text: "Negar",
-          style: "cancel"
-        }
-      ]
-    );
+  const [farmaciaProxima, setFarmaciaProxima] = useState(null);
+  const [detalhesFarmacia, setDetalhesFarmacia] = useState(null);
+
+  useEffect(() => {
+    if (location && location.latitude && location.longitude) {
+      buscarFarmaciaProxima(location.latitude, location.longitude);
+    } else if (location === null) {
+      console.log("Buscando localização...");
+    } else {
+      console.error("Localização não disponível no contexto.");
+    }
+  }, [location]);
+
+  const buscarFarmaciaProxima = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&rankby=distance&type=pharmacy&key=${API_KEY}`
+      );
+      if (response.data.results.length > 0) {
+        const farmacia = response.data.results[0];
+        setFarmaciaProxima(farmacia);
+        buscarDetalhesFarmacia(farmacia.place_id);
+      } else {
+        Alert.alert('Nenhuma farmácia encontrada nas proximidades.');
+      }
+    } catch (error) {
+      console.error("Erro ao buscar farmácias:", error);
+    }
   };
 
-  const handleOpenMap = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permissão Negada', 'Permissão para acessar a localização foi negada.');
+  const buscarDetalhesFarmacia = async (placeId) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${API_KEY}`
+      );
+      setDetalhesFarmacia(response.data.result);
+    } catch (error) {
+      console.error("Erro ao buscar detalhes da farmácia:", error);
+    }
+  };
+
+  const handleOpenMap = () => {
+    if (!farmaciaProxima) {
+      Alert.alert('Nenhuma farmácia próxima encontrada');
       return;
     }
 
-    const latitude = -22.46997;
-    const longitude = -48.55892;
+    const { lat, lng } = farmaciaProxima.geometry.location;
 
     Alert.alert(
       "Abrir Mapa",
@@ -44,20 +66,30 @@ export default function Informacao() {
         {
           text: "Google Maps",
           onPress: () => {
-            const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+            const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
             Linking.openURL(url);
           }
         },
         {
           text: "Waze",
           onPress: () => {
-            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            const url = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
             Linking.openURL(url);
           }
         },
         { text: "Cancelar", style: "cancel" }
       ]
     );
+  };
+
+  const handlePhoneCall = () => {
+    if (!detalhesFarmacia || !detalhesFarmacia.formatted_phone_number) {
+      Alert.alert('Número de telefone não disponível');
+      return;
+    }
+
+    const phoneNumber = `tel:${detalhesFarmacia.formatted_phone_number}`;
+    Linking.openURL(phoneNumber);
   };
 
   const handleMenuPress = () => {
@@ -74,10 +106,18 @@ export default function Informacao() {
 
       <View style={styles.alertContainer}>
         <Text style={styles.text}>ATENÇÃO!</Text>
-        <Text style={styles.text}>Farmácia de Plantão 25/04/2024:</Text>
-        <Text style={styles.text}>Farmácia São Joaquim</Text>
-        <Text style={styles.subtext}>Endereço: Rua Maria Marta, 23 - Jardim Nova Barra</Text>
-        <Text style={styles.subtext}>Telefone: (14) 3604-0000</Text>
+        <Text style={styles.text}>Farmácia de plantão mais próxima:</Text>
+        {farmaciaProxima ? (
+          <>
+            <Text style={styles.subtext}>{farmaciaProxima.name}</Text>
+            <Text style={styles.subtext}>{farmaciaProxima.vicinity}</Text> 
+            {detalhesFarmacia && detalhesFarmacia.formatted_phone_number && (
+              <Text style={styles.subtext}>Telefone: {detalhesFarmacia.formatted_phone_number}</Text>
+            )}
+          </>
+        ) : (
+          <Text style={styles.subtext}>Buscando farmácias próximas...</Text>
+        )}
       </View>
 
       <TouchableOpacity style={styles.callButton} onPress={handlePhoneCall}>

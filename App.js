@@ -8,31 +8,30 @@ import Localizacao from './components/localizacao';
 import Menu from './components/menu';
 import Farmacias from './components/farmacias';
 import Urgencia from './components/urgencia';
-import Telefones from './components/telefones'; // Importação da tela Telefones
+import Telefones from './components/telefones'; 
+import { LocationProvider } from './contexts/LocationContext'; // Importar LocationProvider
 
 const Stack = createStackNavigator();
 
 function AberturaScreen({ navigation }) {
-  // Navega automaticamente para a tela de Localização após 3 segundos
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Localizacao'); // Usando replace para que o usuário não possa voltar para a tela de abertura
-    }, 3000); // 3 segundos
+      navigation.replace('Localizacao');
+    }, 3000);
 
-    return () => clearTimeout(timer); // Limpa o timer quando o componente é desmontado
+    return () => clearTimeout(timer);
   }, [navigation]);
 
   return <Abertura />;
 }
 
 function LocalizacaoScreen({ navigation }) {
-  // Navega automaticamente para a tela de Informacao após 3 segundos
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Informacao'); // Navega para a tela de informação após 3 segundos
-    }, 3000); // 3 segundos de espera
+      navigation.replace('Informacao');
+    }, 3000);
 
-    return () => clearTimeout(timer); // Limpa o timer quando o componente é desmontado
+    return () => clearTimeout(timer);
   }, [navigation]);
 
   return <Localizacao />;
@@ -41,7 +40,6 @@ function LocalizacaoScreen({ navigation }) {
 function HomeScreen({ navigation }) {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [pharmacies, setPharmacies] = useState([]);
   const [selectedPharmacy, setSelectedPharmacy] = useState(null);
   const [showLocateButton, setShowLocateButton] = useState(true);
   const [showPlantaoFarma, setShowPlantaoFarma] = useState(false);
@@ -52,7 +50,6 @@ function HomeScreen({ navigation }) {
         position => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          calculateDistances(position.coords.latitude, position.coords.longitude);
           setShowLocateButton(false);
         },
         error => alert(error.message),
@@ -61,31 +58,6 @@ function HomeScreen({ navigation }) {
     } else {
       alert('Geolocation is not supported by this browser.');
     }
-  };
-
-  const calculateDistances = (lat, lon) => {
-    const updatedPharmacies = getPharmacies().map(pharmacy => {
-      const distance = calculateDistance(lat, lon, pharmacy.latitude, pharmacy.longitude);
-      return { ...pharmacy, distance };
-    });
-    setPharmacies(updatedPharmacies);
-  };
-
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // raio da Terra em km
-    const dLat = toRadians(lat2 - lat1);
-    const dLon = toRadians(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // distância em km
-    return distance;
-  };
-
-  const toRadians = (deg) => {
-    return deg * (Math.PI / 180);
   };
 
   const openMaps = (pharmacy) => {
@@ -102,7 +74,6 @@ function HomeScreen({ navigation }) {
     setLatitude(null);
     setLongitude(null);
     setSelectedPharmacy(null);
-    setPharmacies([]);
   };
 
   return (
@@ -129,18 +100,6 @@ function HomeScreen({ navigation }) {
           ) : (
             <Button title="Voltar" onPress={goBack} color="#FF5733" />
           )}
-          {latitude && longitude && (
-            <ScrollView style={styles.pharmacyList}>
-              {pharmacies.map(pharmacy => (
-                <View key={pharmacy.name} style={styles.pharmacyItem}>
-                  <Text style={styles.pharmacyName}>{pharmacy.name}</Text>
-                  <TouchableOpacity onPress={() => openMaps(pharmacy)}>
-                    <Text style={styles.openMapButton}>Abrir Mapa</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </ScrollView>
-          )}
           <Button title="Ver Farmácia de Plantão" onPress={() => setShowPlantaoFarma(true)} color="#a80000" />
           <Button title="Ir para Localização" onPress={() => navigation.navigate('Localizacao')} color="#007bff" />
           <Button title="Ir para Informação" onPress={() => navigation.navigate('Informacao')} color="#007bff" />
@@ -153,28 +112,22 @@ function HomeScreen({ navigation }) {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="AberturaScreen">
-        <Stack.Screen name="AberturaScreen" component={AberturaScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }}/>
-        <Stack.Screen name="Localizacao" component={LocalizacaoScreen}  options={{ headerShown: false }}/>
-        <Stack.Screen name="Informacao" component={Informacao}  options={{ headerShown: false }}/>
-        <Stack.Screen name="Menu" component={Menu}  options={{ headerShown: false }}/>
-        <Stack.Screen name="Telefones" component={Telefones} options={{ headerShown: false }}/>
-        <Stack.Screen name="Urgencia" component={Urgencia} options={{ headerShown: false }}/>  
-        <Stack.Screen name="Farmacias" component={Farmacias} options={{ headerShown: false }}/> 
-      </Stack.Navigator>
-    </NavigationContainer>
+    <LocationProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="AberturaScreen">
+          <Stack.Screen name="AberturaScreen" component={AberturaScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }}/>
+          <Stack.Screen name="Localizacao" component={LocalizacaoScreen}  options={{ headerShown: false }}/>
+          <Stack.Screen name="Informacao" component={Informacao}  options={{ headerShown: false }}/>
+          <Stack.Screen name="Menu" component={Menu}  options={{ headerShown: false }}/>
+          <Stack.Screen name="Telefones" component={Telefones} options={{ headerShown: false }}/>
+          <Stack.Screen name="Urgencia" component={Urgencia} options={{ headerShown: false }}/>  
+          <Stack.Screen name="Farmacias" component={Farmacias} options={{ headerShown: false }}/> 
+        </Stack.Navigator>
+      </NavigationContainer>
+    </LocationProvider>
   );
 }
-
-const getPharmacies = () => {
-  return [
-    { name: 'Farmácia São João', latitude: -22.510734188507968, longitude: -48.558026700475 },
-    { name: 'Drogaria Pague Menos', latitude: -22.520734188507968, longitude: -48.548026700475 },
-    // Adicione mais farmácias conforme necessário
-  ];
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -240,23 +193,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  pharmacyList: {
-    flex: 1,
-    width: '100%',
-  },
-  pharmacyItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  openMapButton: {
-    fontSize: 16,
-    color: 'blue',
-    textDecorationLine: 'underline',
   },
 });
