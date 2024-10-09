@@ -1,13 +1,114 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+
+const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fecha }) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  const handleToggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  const handleCall = () => {
+    Linking.openURL(`tel:${telefone}`);
+  };
+
+  const handleOpenMap = () => {
+    Alert.alert(
+      "Abrir Mapa",
+      "Deseja abrir o mapa no Google Maps ou Waze?",
+      [
+        {
+          text: "Google Maps",
+          onPress: () => {
+            const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Waze",
+          onPress: () => {
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            Linking.openURL(url);
+          }
+        },
+        { text: "Cancelar", style: "cancel" }
+      ]
+    );
+  };
+
+  // Função para determinar se a farmácia está aberta
+  const isFarmaciaAberta = () => {
+    const agora = new Date();
+    const horaAtual = agora.getHours() + agora.getMinutes() / 60; // Hora atual em decimal
+
+    const [abreHora, abreMinuto] = abre.split(':').map(Number);
+    const [fechaHora, fechaMinuto] = fecha.split(':').map(Number);
+
+    const horaAbertura = abreHora + abreMinuto / 60;
+    const horaFechamento = fechaHora + fechaMinuto / 60;
+
+    return horaAtual >= horaAbertura && horaAtual <= horaFechamento;
+  };
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.title}>{nome}</Text>
+      <Text style={styles.info}>{endereco}</Text>
+      
+      {/* Indicador de Farmácia Aberta/Fechada */}
+      <View style={styles.statusContainer}>
+        <View style={[styles.statusIndicator, { backgroundColor: isFarmaciaAberta() ? 'green' : 'red' }]} />
+        <Text style={styles.statusText}>{isFarmaciaAberta() ? 'Aberta' : 'Fechada'}</Text>
+      </View>
+
+      <TouchableOpacity style={styles.expandButton} onPress={handleToggleExpand}>
+        <Text style={styles.buttonText}>{expanded ? 'Mostrar Menos' : 'Saber Mais'}</Text>
+      </TouchableOpacity>
+
+      {expanded && (
+        <>
+          <Text style={styles.info}>Telefone: {telefone}</Text>
+          <View style={styles.actions}>
+            <TouchableOpacity style={styles.actionButton} onPress={handleCall}>
+              <Text style={styles.actionButtonText}>Ligar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton} onPress={handleOpenMap}>
+              <Text style={styles.actionButtonText}>Abrir no Mapa</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+    </View>
+  );
+};
 
 export default function Farmacias() {
   const navigation = useNavigation();
 
+  const farmacias = [
+    { nome: 'DROGARIA TOTAL (ANTIGA COOPERBARRA I)', endereco: 'R: VALENTIN REGINATO, 399', telefone: '3438 1440', latitude: -22.491835091856895, longitude: -48.55048180403732, abre: '08:00', fecha: '21:00' },
+    { nome: 'DROGARIA SÃO MARCOS', endereco: 'Av. Dionísio Dutra e Silva, 557', telefone: '3641 4844', latitude: -22.471427976604677, longitude: -48.56789185064798, abre: '12:00', fecha: '13:00' },
+    { nome: 'DROGAL (MAJOR POMPEU)', endereco: 'R.: MAJOR POMPEU, 335', telefone: '3642 3242', latitude: -22.497242361960758, longitude: -48.55997777050121, abre: '07:00', fecha: '22:00' },
+    { nome: 'DROGARIA CONFIANÇA', endereco: 'R: 9 DE JULHO, 527', telefone: '3641 1295', latitude: -22.489120489859793, longitude: -48.56470687044626, abre: '08:00', fecha: '19:00' },
+    { nome: 'FARMACENTRO', endereco: 'R.: PRUDENTE DE MORAES, 325', telefone: '3641 3256', latitude: -22.496261681669647, longitude: -48.55437857495177, abre: '12:00', fecha: '13:00' },
+    { nome: 'DROGAL (RIO BRANCO)', endereco: 'R: RIO BRANCO, 301', telefone: '3642 1230', latitude: -22.494980501703125, longitude: -48.55666775561035, abre: '07:00', fecha: '22:00' },
+    { nome: 'DROGARIA COMPRE CERTO', endereco: 'R: 9 DE JULHO, 250', telefone: '3641 4724', latitude: -22.491360237023745, longitude: -48.56348774611534, abre: '12:00', fecha: '13:00' },
+    { nome: 'NATURALIS MANIPULAÇÃO E DROGARIA', endereco: 'RUA SAVÉRIO SALVI, 296', telefone: '3641 1664', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '12:00', fecha: '13:00' },
+    { nome: 'DROGARIA SÃO VALENTIM', endereco: 'AV: DR. CAIO SIMÕES, 282', telefone: '3604 1234', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '07:00', fecha: '22:00' },
+    { nome: 'FARMÁCIA FÓRMULA', endereco: 'R: SEBASTIÃO FRANCO ARRUDA, 660', telefone: '3641 7844', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '08:00', fecha: '20:00' },
+    { nome: 'DROGARIA POUPAQUI', endereco: 'R.: MAJOR POMPEU, 392', telefone: '3642 5545', latitude: -22.496778302516304, longitude: -48.560477274447365, abre: '08:00', fecha: '19:00' },
+    { nome: 'DROGARIA BEM POPULAR BRASIL', endereco: 'R.: WINIFRIDA, 237', telefone: '91004 0344', latitude: -22.496053114359785, longitude: -48.561919807695126, abre: '08:00', fecha: '19:00' },
+    { nome: 'DROGASIL', endereco: 'R: 1º DE MARÇO, 497', telefone: '3641 1588', latitude: -22.495041323691105, longitude: -48.560157264629005, abre: '07:00', fecha: '22:00' },
+    { nome: 'FARMÁCIA DOS AMIGOS', endereco: 'R: SAVÉRIO SALVI, 326', telefone: '3438 1957', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '08:00', fecha: '19:00' },
+    { nome: 'COOPERBARRA II', endereco: 'R: SALVADOR DE TOLEDO, 1000', telefone: '3641 0151', latitude: -22.49539560511187, longitude: -48.56123876146177, abre: '12:00', fecha: '13:00' },
+    { nome: 'DROGARIA TOTAL - UNIDADE FÓRMULA (COHAB)', endereco: 'AV.: ARTHUR BALSI, 120', telefone: '3641 0060', latitude: -22.4759467022026, longitude: -48.56771149029899, abre: '08:00', fecha: '20:00' },
+    { nome: 'DROGASOL', endereco: 'AV: ARTHUR BALSI, 300', telefone: '3642 3405', latitude: -22.47493982862817, longitude: -48.56628607495249, abre: '08:00', fecha: '19:00', fecha: '19:00' },
+];
+
   const handleBackPress = () => {
-    navigation.goBack(); // Voltar para a tela de menu
+    navigation.goBack(); // Volta para a tela anterior
   };
 
   return (
@@ -18,12 +119,18 @@ export default function Farmacias() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>+FARMÁCIAS</Text>
-        <Text style={styles.info}>Drogal: (14) 3642-3242</Text>
-        <Text style={styles.info}>Drogasil: (14) 3642-6262</Text>
-        <Text style={styles.info}>Drograria Santo Antonio: (14) 3641-6134</Text>
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {farmacias.map((farmacia, index) => (
+          <FarmaciaCard
+            key={index}
+            nome={farmacia.nome}
+            endereco={farmacia.endereco}
+            telefone={farmacia.telefone}
+            latitude={farmacia.latitude}
+            longitude={farmacia.longitude}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -39,29 +146,74 @@ const styles = StyleSheet.create({
     backgroundColor: '#A80000',
     borderBottomLeftRadius: 150,
     borderBottomRightRadius: 150,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
     justifyContent: 'center',
-    alignItems: 'flex-start', // Alinha o conteúdo à esquerda
-    paddingLeft: 20, // Adiciona padding à esquerda
-    position: 'relative', // Faz com que os filhos usem posição relativa
+    paddingRight: 20,
+    paddingTop: 20,
   },
   backButton: {
     position: 'absolute',
-    top: 20, // Ajusta a posição vertical do botão
-    left: 20, // Ajusta a posição horizontal do botão
+    top: 20,
+    left: 20,
   },
-  content: {
-    marginTop: 80, // Ajusta a margem superior para evitar sobreposição com o círculo
+  scrollViewContent: {
+    paddingTop: 150, // Deixa espaço para o topo fixo
+    paddingHorizontal: 10,
     alignItems: 'center',
   },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    elevation: 3,
+    width: '90%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#A80000',
-    marginBottom: 20,
   },
   info: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#333',
-    marginBottom: 10,
+    marginVertical: 5,
+  },
+  expandButton: {
+    backgroundColor: '#A80000',
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  actionButton: {
+    backgroundColor: '#A80000',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    width: '48%',
+    alignItems: 'center',
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
