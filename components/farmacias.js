@@ -40,6 +40,10 @@ const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fec
 
   // Função para determinar se a farmácia está aberta
   const isFarmaciaAberta = () => {
+    if (!abre || !fecha) {
+      return false; // Se 'abre' ou 'fecha' não estão definidos, considera fechada
+    }
+
     const agora = new Date();
     const horaAtual = agora.getHours() + agora.getMinutes() / 60; // Hora atual em decimal
 
@@ -89,23 +93,23 @@ export default function Farmacias() {
 
   const farmacias = [
     { nome: 'DROGARIA TOTAL (ANTIGA COOPERBARRA I)', endereco: 'R: VALENTIN REGINATO, 399', telefone: '3438 1440', latitude: -22.491835091856895, longitude: -48.55048180403732, abre: '08:00', fecha: '21:00' },
-    { nome: 'DROGARIA SÃO MARCOS', endereco: 'Av. Dionísio Dutra e Silva, 557', telefone: '3641 4844', latitude: -22.471427976604677, longitude: -48.56789185064798, abre: '12:00', fecha: '13:00' },
+    { nome: 'DROGARIA SÃO MARCOS', endereco: 'Av. Dionísio Dutra e Silva, 557', telefone: '3641 4844', latitude: -22.471427976604677, longitude: -48.56789185064798, abre: '12:00', fecha: '13:00' },//mudar horário 
     { nome: 'DROGAL (MAJOR POMPEU)', endereco: 'R.: MAJOR POMPEU, 335', telefone: '3642 3242', latitude: -22.497242361960758, longitude: -48.55997777050121, abre: '07:00', fecha: '22:00' },
     { nome: 'DROGARIA CONFIANÇA', endereco: 'R: 9 DE JULHO, 527', telefone: '3641 1295', latitude: -22.489120489859793, longitude: -48.56470687044626, abre: '08:00', fecha: '19:00' },
-    { nome: 'FARMACENTRO', endereco: 'R.: PRUDENTE DE MORAES, 325', telefone: '3641 3256', latitude: -22.496261681669647, longitude: -48.55437857495177, abre: '12:00', fecha: '13:00' },
+    { nome: 'FARMACENTRO', endereco: 'R.: PRUDENTE DE MORAES, 325', telefone: '3641 3256', latitude: -22.496261681669647, longitude: -48.55437857495177, abre: '12:00', fecha: '13:00' },//mudar horário 
     { nome: 'DROGAL (RIO BRANCO)', endereco: 'R: RIO BRANCO, 301', telefone: '3642 1230', latitude: -22.494980501703125, longitude: -48.55666775561035, abre: '07:00', fecha: '22:00' },
-    { nome: 'DROGARIA COMPRE CERTO', endereco: 'R: 9 DE JULHO, 250', telefone: '3641 4724', latitude: -22.491360237023745, longitude: -48.56348774611534, abre: '12:00', fecha: '13:00' },
-    { nome: 'NATURALIS MANIPULAÇÃO E DROGARIA', endereco: 'RUA SAVÉRIO SALVI, 296', telefone: '3641 1664', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '12:00', fecha: '13:00' },
+    { nome: 'DROGARIA COMPRE CERTO', endereco: 'R: 9 DE JULHO, 250', telefone: '3641 4724', latitude: -22.491360237023745, longitude: -48.56348774611534, abre: '12:00', fecha: '13:00' },//mudar horário 
+    { nome: 'NATURALIS MANIPULAÇÃO E DROGARIA', endereco: 'RUA SAVÉRIO SALVI, 296', telefone: '3641 1664', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '12:00', fecha: '13:00' },//mudar horário 
     { nome: 'DROGARIA SÃO VALENTIM', endereco: 'AV: DR. CAIO SIMÕES, 282', telefone: '3604 1234', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '07:00', fecha: '22:00' },
     { nome: 'FARMÁCIA FÓRMULA', endereco: 'R: SEBASTIÃO FRANCO ARRUDA, 660', telefone: '3641 7844', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '08:00', fecha: '20:00' },
     { nome: 'DROGARIA POUPAQUI', endereco: 'R.: MAJOR POMPEU, 392', telefone: '3642 5545', latitude: -22.496778302516304, longitude: -48.560477274447365, abre: '08:00', fecha: '19:00' },
     { nome: 'DROGARIA BEM POPULAR BRASIL', endereco: 'R.: WINIFRIDA, 237', telefone: '91004 0344', latitude: -22.496053114359785, longitude: -48.561919807695126, abre: '08:00', fecha: '19:00' },
     { nome: 'DROGASIL', endereco: 'R: 1º DE MARÇO, 497', telefone: '3641 1588', latitude: -22.495041323691105, longitude: -48.560157264629005, abre: '07:00', fecha: '22:00' },
     { nome: 'FARMÁCIA DOS AMIGOS', endereco: 'R: SAVÉRIO SALVI, 326', telefone: '3438 1957', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '08:00', fecha: '19:00' },
-    { nome: 'COOPERBARRA II', endereco: 'R: SALVADOR DE TOLEDO, 1000', telefone: '3641 0151', latitude: -22.49539560511187, longitude: -48.56123876146177, abre: '12:00', fecha: '13:00' },
+    { nome: 'COOPERBARRA II', endereco: 'R: SALVADOR DE TOLEDO, 1000', telefone: '3641 0151', latitude: -22.49539560511187, longitude: -48.56123876146177, abre: '08:00', fecha: '19:00' },
     { nome: 'DROGARIA TOTAL - UNIDADE FÓRMULA (COHAB)', endereco: 'AV.: ARTHUR BALSI, 120', telefone: '3641 0060', latitude: -22.4759467022026, longitude: -48.56771149029899, abre: '08:00', fecha: '20:00' },
-    { nome: 'DROGASOL', endereco: 'AV: ARTHUR BALSI, 300', telefone: '3642 3405', latitude: -22.47493982862817, longitude: -48.56628607495249, abre: '08:00', fecha: '19:00', fecha: '19:00' },
-];
+    { nome: 'DROGASOL', endereco: 'AV: ARTHUR BALSI, 300', telefone: '3642 3405', latitude: -22.47493982862817, longitude: -48.56628607495249, abre: '08:00', fecha: '19:00' },
+  ];
 
   const handleBackPress = () => {
     navigation.goBack(); // Volta para a tela anterior
@@ -128,6 +132,8 @@ export default function Farmacias() {
             telefone={farmacia.telefone}
             latitude={farmacia.latitude}
             longitude={farmacia.longitude}
+            abre={farmacia.abre}  // Adicionado
+            fecha={farmacia.fecha} // Adicionado
           />
         ))}
       </ScrollView>
@@ -136,6 +142,13 @@ export default function Farmacias() {
 }
 
 const styles = StyleSheet.create({
+  statusText: {
+    fontSize: 18,
+    marginLeft:8,
+    color: '#A80000',
+    fontWeight: 'bold',
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#E0E1E0',
@@ -217,3 +230,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
