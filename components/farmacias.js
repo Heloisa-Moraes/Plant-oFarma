@@ -106,7 +106,7 @@ export default function Farmacias() {
     { nome: 'DROGARIA BEM POPULAR BRASIL', endereco: 'R.: WINIFRIDA, 237', telefone: '91004 0344', latitude: -22.496053114359785, longitude: -48.561919807695126, abre: '08:00', fecha: '19:00' },
     { nome: 'DROGASIL', endereco: 'R: 1º DE MARÇO, 497', telefone: '3641 1588', latitude: -22.495041323691105, longitude: -48.560157264629005, abre: '07:00', fecha: '22:00' },
     { nome: 'FARMÁCIA DOS AMIGOS', endereco: 'R: SAVÉRIO SALVI, 326', telefone: '3438 1957', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '08:00', fecha: '19:00' },
-    { nome: 'COOPERBARRA II', endereco: 'R: SALVADOR DE TOLEDO, 1000', telefone: '3641 0151', latitude: -22.49539560511187, longitude: -48.56123876146177, abre: '08:00', fecha: '19:00' },
+    { nome: 'HIPERPOPULAR(ANTIGA COOPERBARRA II)', endereco: 'R: SALVADOR DE TOLEDO, 1000', telefone: '3641 0151', latitude: -22.49539560511187, longitude: -48.56123876146177, abre: '08:00', fecha: '19:00' },
     { nome: 'DROGARIA TOTAL - UNIDADE FÓRMULA (COHAB)', endereco: 'AV.: ARTHUR BALSI, 120', telefone: '3641 0060', latitude: -22.4759467022026, longitude: -48.56771149029899, abre: '08:00', fecha: '20:00' },
     { nome: 'DROGASOL', endereco: 'AV: ARTHUR BALSI, 300', telefone: '3642 3405', latitude: -22.47493982862817, longitude: -48.56628607495249, abre: '08:00', fecha: '19:00' },
   ];
