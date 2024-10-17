@@ -13,4 +13,6 @@
 
 comit: 
 git config --global user.name Heloisa-Moraes
-git config --global user.email helomoraes2009@hotmail.com npx expo start   --localhost --android
+git config --global user.email helomoraes2009@hotmail.com 
+
+npx expo start   --localhost --android

@@ -10,6 +10,7 @@ import Farmacias from './components/farmacias';
 import Urgencia from './components/urgencia';
 import Telefones from './components/telefones'; 
 import { LocationProvider } from './contexts/LocationContext'; // Importar LocationProvider
+import { StatusBar } from 'expo-status-bar';
 
 const Stack = createStackNavigator();
 
@@ -125,6 +126,7 @@ export default function App() {
           <Stack.Screen name="Farmacias" component={Farmacias} options={{ headerShown: false }}/> 
         </Stack.Navigator>
       </NavigationContainer>
+      <StatusBar style='light' />
     </LocationProvider>
   );
 }

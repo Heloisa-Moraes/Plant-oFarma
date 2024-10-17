@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, ScrollView } 
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fecha }) => {
+const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fecha, aberta }) => {
   const [expanded, setExpanded] = useState(false);
-  
+
   const handleToggleExpand = () => {
     setExpanded(!expanded);
   };
@@ -38,34 +38,16 @@ const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fec
     );
   };
 
-  // Função para determinar se a farmácia está aberta
-  const isFarmaciaAberta = () => {
-    if (!abre || !fecha) {
-      return false; // Se 'abre' ou 'fecha' não estão definidos, considera fechada
-    }
-
-    const agora = new Date();
-    const horaAtual = agora.getHours() + agora.getMinutes() / 60; // Hora atual em decimal
-
-    const [abreHora, abreMinuto] = abre.split(':').map(Number);
-    const [fechaHora, fechaMinuto] = fecha.split(':').map(Number);
-
-    const horaAbertura = abreHora + abreMinuto / 60;
-    const horaFechamento = fechaHora + fechaMinuto / 60;
-
-    return horaAtual >= horaAbertura && horaAtual <= horaFechamento;
-  };
-
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{nome}</Text>
-      <Text style={styles.info}>{endereco}</Text>
-      
       {/* Indicador de Farmácia Aberta/Fechada */}
       <View style={styles.statusContainer}>
-        <View style={[styles.statusIndicator, { backgroundColor: isFarmaciaAberta() ? 'green' : 'red' }]} />
-        <Text style={styles.statusText}>{isFarmaciaAberta() ? 'Aberta' : 'Fechada'}</Text>
+        <View style={[styles.statusIndicator, { backgroundColor: aberta ? 'green' : 'red' }]} />
+        <Text style={styles.statusText}>{aberta ? 'Aberta' : 'Fechada'}</Text>
       </View>
+
+      <Text style={styles.title}>{nome}</Text>
+      <Text style={styles.info}>{endereco}</Text>
 
       <TouchableOpacity style={styles.expandButton} onPress={handleToggleExpand}>
         <Text style={styles.buttonText}>{expanded ? 'Mostrar Menos' : 'Saber Mais'}</Text>
@@ -111,6 +93,26 @@ export default function Farmacias() {
     { nome: 'DROGASOL', endereco: 'AV: ARTHUR BALSI, 300', telefone: '3642 3405', latitude: -22.47493982862817, longitude: -48.56628607495249, abre: '08:00', fecha: '19:00' },
   ];
 
+  // Função para determinar se a farmácia está aberta
+  const isFarmaciaAberta = (abre, fecha) => {
+    if (!abre || !fecha) return false;
+
+    const agora = new Date();
+    const horaAtual = agora.getHours() + agora.getMinutes() / 60; // Hora atual em decimal
+
+    const [abreHora, abreMinuto] = abre.split(':').map(Number);
+    const [fechaHora, fechaMinuto] = fecha.split(':').map(Number);
+
+    const horaAbertura = abreHora + abreMinuto / 60;
+    const horaFechamento = fechaHora + fechaMinuto / 60;
+
+    return horaAtual >= horaAbertura && horaAtual <= horaFechamento;
+  };
+
+  // Separar farmácias abertas e fechadas
+  const farmaciasAbertas = farmacias.filter(farmacia => isFarmaciaAberta(farmacia.abre, farmacia.fecha));
+  const farmaciasFechadas = farmacias.filter(farmacia => !isFarmaciaAberta(farmacia.abre, farmacia.fecha));
+
   const handleBackPress = () => {
     navigation.goBack(); // Volta para a tela anterior
   };
@@ -124,7 +126,9 @@ export default function Farmacias() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {farmacias.map((farmacia, index) => (
+        {/* Exibir farmácias abertas */}
+        <Text style={styles.sectionTitle}>Farmácias Abertas</Text>
+        {farmaciasAbertas.map((farmacia, index) => (
           <FarmaciaCard
             key={index}
             nome={farmacia.nome}
@@ -132,8 +136,25 @@ export default function Farmacias() {
             telefone={farmacia.telefone}
             latitude={farmacia.latitude}
             longitude={farmacia.longitude}
-            abre={farmacia.abre}  // Adicionado
-            fecha={farmacia.fecha} // Adicionado
+            abre={farmacia.abre}
+            fecha={farmacia.fecha}
+            aberta={true} // Farmácia está aberta
+          />
+        ))}
+
+        {/* Exibir farmácias fechadas */}
+        <Text style={styles.sectionTitle}>Farmácias Fechadas</Text>
+        {farmaciasFechadas.map((farmacia, index) => (
+          <FarmaciaCard
+            key={index}
+            nome={farmacia.nome}
+            endereco={farmacia.endereco}
+            telefone={farmacia.telefone}
+            latitude={farmacia.latitude}
+            longitude={farmacia.longitude}
+            abre={farmacia.abre}
+            fecha={farmacia.fecha}
+            aberta={false} // Farmácia está fechada
           />
         ))}
       </ScrollView>
@@ -142,13 +163,6 @@ export default function Farmacias() {
 }
 
 const styles = StyleSheet.create({
-  statusText: {
-    fontSize: 18,
-    marginLeft:8,
-    color: '#A80000',
-    fontWeight: 'bold',
-  },
-
   container: {
     flex: 1,
     backgroundColor: '#E0E1E0',
@@ -199,6 +213,29 @@ const styles = StyleSheet.create({
     color: '#333',
     marginVertical: 5,
   },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  statusIndicator: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  statusText: {
+    fontSize: 16,
+    marginLeft: 8,
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#A80000',
+    marginVertical: 15,
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+  },
   expandButton: {
     backgroundColor: '#A80000',
     paddingVertical: 10,
@@ -230,4 +267,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
