@@ -11,10 +11,13 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "expo": "~51.0.24",
     "expo-intent-launcher": "~11.0.1",
     "expo-location": "~17.0.1",
     "expo-status-bar": "~1.12.1",
+    "express": "^4.21.1",
+    "mongodb": "^6.9.0",
     "react": "18.2.0",
     "react-native": "0.74.3",
     "react-native-paper": "4.9.2",
@@ -24,5 +27,11 @@
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
-  "private": true
+  "private": true,
+  "name": "plantaofarma",
+  "description": "Open the `App.js` file to start writing some code. You can preview the changes directly on your phone or tablet by scanning the **QR code** or use the iOS or Android emulators. When you're done, click **Save** and share the link!",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
