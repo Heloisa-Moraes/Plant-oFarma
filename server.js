@@ -28,8 +28,12 @@ connect();
 // Rota GET para obter todas as farmácias
 app.get('/farmacias', async (req, res) => {
   try {
+    console.warn('chegou aqui');
     const db = client.db("plantaoFarmaDB");
+    console.warn('chegou aqui 2');
+    
     const farmacias = await db.collection("Farmacias").find({}).toArray();
+    console.warn('chegou aqui 3');
     res.json(farmacias);
   } catch (err) {
     console.error("Erro ao buscar farmácias", err);
