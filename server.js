@@ -12,7 +12,7 @@ app.use(bodyParser.json()); // Para processar o JSON enviado no body das requisi
 
 // Conexão com MongoDB
 const uri = "mongodb+srv://lucasolivato:2eEen56rtYSwjUwP@plantaofarmadb.bluqj.mongodb.net/?retryWrites=true&w=majority&appName=plantaoFarmaDB";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 async function connect() {
   try {
@@ -28,15 +28,12 @@ connect();
 // Rota GET para obter todas as farmácias
 app.get('/farmacias', async (req, res) => {
   try {
-    console.warn('chegou aqui');
     const db = client.db("plantaoFarmaDB");
-    console.warn('chegou aqui 2');
-    
     const farmacias = await db.collection("Farmacias").find({}).toArray();
-    console.warn('chegou aqui 3');
-    res.json(farmacias);
-  } catch (err) {
-    console.error("Erro ao buscar farmácias", err);
+    console.log(farmacias); // Verificar o que está sendo retornado
+    res.status(200).json(farmacias);
+  } catch (error) {
+    console.error("Erro ao buscar farmácias:", error);
     res.status(500).json({ error: "Erro ao buscar farmácias" });
   }
 });
@@ -69,6 +66,7 @@ app.post('/farmacias', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+// Adicionando o '0.0.0.0' para escutar conexões externas
+app.listen(port, '0.0.0.0', () => {
   console.log(`API rodando em http://localhost:${port}`);
 });

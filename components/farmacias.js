@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fecha, aberta }) => {
+const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, aberta }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleToggleExpand = () => {
@@ -40,7 +40,6 @@ const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fec
 
   return (
     <View style={styles.card}>
-      {/* Indicador de Farmácia Aberta/Fechada */}
       <View style={styles.statusContainer}>
         <View style={[styles.statusIndicator, { backgroundColor: aberta ? 'green' : 'red' }]} />
         <Text style={styles.statusText}>{aberta ? 'Aberta' : 'Fechada'}</Text>
@@ -72,49 +71,57 @@ const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, abre, fec
 
 export default function Farmacias() {
   const navigation = useNavigation();
+  const [farmaciasAbertas, setFarmaciasAbertas] = useState([]);
+  const [farmaciasFechadas, setFarmaciasFechadas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const farmacias = [
-    { nome: 'DROGARIA TOTAL (ANTIGA COOPERBARRA I)', endereco: 'R: VALENTIN REGINATO, 399', telefone: '3438 1440', latitude: -22.491835091856895, longitude: -48.55048180403732, abre: '08:00', fecha: '21:00' },
-    { nome: 'DROGARIA SÃO MARCOS', endereco: 'Av. Dionísio Dutra e Silva, 557', telefone: '3641 4844', latitude: -22.471427976604677, longitude: -48.56789185064798, abre: '12:00', fecha: '13:00' },//mudar horário 
-    { nome: 'DROGAL (MAJOR POMPEU)', endereco: 'R.: MAJOR POMPEU, 335', telefone: '3642 3242', latitude: -22.497242361960758, longitude: -48.55997777050121, abre: '07:00', fecha: '22:00' },
-    { nome: 'DROGARIA CONFIANÇA', endereco: 'R: 9 DE JULHO, 527', telefone: '3641 1295', latitude: -22.489120489859793, longitude: -48.56470687044626, abre: '08:00', fecha: '19:00' },
-    { nome: 'FARMACENTRO', endereco: 'R.: PRUDENTE DE MORAES, 325', telefone: '3641 3256', latitude: -22.496261681669647, longitude: -48.55437857495177, abre: '12:00', fecha: '13:00' },//mudar horário 
-    { nome: 'DROGAL (RIO BRANCO)', endereco: 'R: RIO BRANCO, 301', telefone: '3642 1230', latitude: -22.494980501703125, longitude: -48.55666775561035, abre: '07:00', fecha: '22:00' },
-    { nome: 'DROGARIA COMPRE CERTO', endereco: 'R: 9 DE JULHO, 250', telefone: '3641 4724', latitude: -22.491360237023745, longitude: -48.56348774611534, abre: '12:00', fecha: '13:00' },//mudar horário 
-    { nome: 'NATURALIS MANIPULAÇÃO E DROGARIA', endereco: 'RUA SAVÉRIO SALVI, 296', telefone: '3641 1664', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '12:00', fecha: '13:00' },//mudar horário 
-    { nome: 'DROGARIA SÃO VALENTIM', endereco: 'AV: DR. CAIO SIMÕES, 282', telefone: '3604 1234', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '07:00', fecha: '22:00' },
-    { nome: 'FARMÁCIA FÓRMULA', endereco: 'R: SEBASTIÃO FRANCO ARRUDA, 660', telefone: '3641 7844', latitude: -22.492943517843635, longitude: -48.55330146115117, abre: '08:00', fecha: '20:00' },
-    { nome: 'DROGARIA POUPAQUI', endereco: 'R.: MAJOR POMPEU, 392', telefone: '3642 5545', latitude: -22.496778302516304, longitude: -48.560477274447365, abre: '08:00', fecha: '19:00' },
-    { nome: 'DROGARIA BEM POPULAR BRASIL', endereco: 'R.: WINIFRIDA, 237', telefone: '91004 0344', latitude: -22.496053114359785, longitude: -48.561919807695126, abre: '08:00', fecha: '19:00' },
-    { nome: 'DROGASIL', endereco: 'R: 1º DE MARÇO, 497', telefone: '3641 1588', latitude: -22.495041323691105, longitude: -48.560157264629005, abre: '07:00', fecha: '22:00' },
-    { nome: 'FARMÁCIA DOS AMIGOS', endereco: 'R: SAVÉRIO SALVI, 326', telefone: '3438 1957', latitude: -22.465699361644834, longitude: -48.563719100210754, abre: '08:00', fecha: '19:00' },
-    { nome: 'HIPERPOPULAR(ANTIGA COOPERBARRA II)', endereco: 'R: SALVADOR DE TOLEDO, 1000', telefone: '3641 0151', latitude: -22.49539560511187, longitude: -48.56123876146177, abre: '08:00', fecha: '19:00' },
-    { nome: 'DROGARIA TOTAL - UNIDADE FÓRMULA (COHAB)', endereco: 'AV.: ARTHUR BALSI, 120', telefone: '3641 0060', latitude: -22.4759467022026, longitude: -48.56771149029899, abre: '08:00', fecha: '20:00' },
-    { nome: 'DROGASOL', endereco: 'AV: ARTHUR BALSI, 300', telefone: '3642 3405', latitude: -22.47493982862817, longitude: -48.56628607495249, abre: '08:00', fecha: '19:00' },
-  ];
-
-  // Função para determinar se a farmácia está aberta
-  const isFarmaciaAberta = (abre, fecha) => {
-    if (!abre || !fecha) return false;
-
-    const agora = new Date();
-    const horaAtual = agora.getHours() + agora.getMinutes() / 60; // Hora atual em decimal
-
-    const [abreHora, abreMinuto] = abre.split(':').map(Number);
-    const [fechaHora, fechaMinuto] = fecha.split(':').map(Number);
-
-    const horaAbertura = abreHora + abreMinuto / 60;
-    const horaFechamento = fechaHora + fechaMinuto / 60;
-
-    return horaAtual >= horaAbertura && horaAtual <= horaFechamento;
+  const getServerIp = () => {
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      return '10.0.0.125';  // Use o IP da sua máquina aqui
+    } else {
+      return 'localhost';
+    }
   };
 
-  // Separar farmácias abertas e fechadas
-  const farmaciasAbertas = farmacias.filter(farmacia => isFarmaciaAberta(farmacia.abre, farmacia.fecha));
-  const farmaciasFechadas = farmacias.filter(farmacia => !isFarmaciaAberta(farmacia.abre, farmacia.fecha));
+  const ipServer = getServerIp();
+
+  useEffect(() => {
+    const buscarFarmacias = async () => {
+      try {
+        const response = await fetch(`http://${ipServer}:3000/farmacias`);
+        const farmacias = await response.json();
+
+        const agora = new Date();
+        const horaAtual = agora.getHours() + agora.getMinutes() / 60;
+
+        const abertas = farmacias.filter(farmacia => {
+          const [abreHora, abreMinuto] = farmacia.abre.split(':').map(Number);
+          const [fechaHora, fechaMinuto] = farmacia.fecha.split(':').map(Number);
+          const horaAbertura = abreHora + abreMinuto / 60;
+          const horaFechamento = fechaHora + fechaMinuto / 60;
+          return horaAtual >= horaAbertura && horaAtual <= horaFechamento;
+        });
+
+        const fechadas = farmacias.filter(farmacia => !abertas.includes(farmacia));
+
+        setFarmaciasAbertas(abertas);
+        setFarmaciasFechadas(fechadas);
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro ao buscar farmácias:', error);
+        setLoading(false);
+      }
+    };
+
+    buscarFarmacias();
+  }, []);
+
+  const handleNavigateToPlantao = () => {
+    navigation.navigate('Informacao');
+  };
 
   const handleBackPress = () => {
-    navigation.goBack(); // Volta para a tela anterior
+    navigation.goBack();
   };
 
   return (
@@ -126,37 +133,44 @@ export default function Farmacias() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {/* Exibir farmácias abertas */}
         <Text style={styles.sectionTitle}>Farmácias Abertas</Text>
-        {farmaciasAbertas.map((farmacia, index) => (
-          <FarmaciaCard
-            key={index}
-            nome={farmacia.nome}
-            endereco={farmacia.endereco}
-            telefone={farmacia.telefone}
-            latitude={farmacia.latitude}
-            longitude={farmacia.longitude}
-            abre={farmacia.abre}
-            fecha={farmacia.fecha}
-            aberta={true} // Farmácia está aberta
-          />
-        ))}
+        {farmaciasAbertas.length > 0 ? (
+          farmaciasAbertas.map((farmacia, index) => (
+            <FarmaciaCard
+              key={index}
+              nome={farmacia.nome}
+              endereco={farmacia.endereco}
+              telefone={farmacia.telefone}
+              latitude={farmacia.latitude}
+              longitude={farmacia.longitude}
+              aberta={true}
+            />
+          ))
+        ) : (
+          <View>
+            <Text style={styles.noFarmaciaText}>Não há nenhuma farmácia aberta no momento.</Text>
+            <TouchableOpacity style={styles.plantaoButton} onPress={handleNavigateToPlantao}>
+              <Text style={styles.plantaoButtonText}>Verifique aqui a farmácia de plantão!</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-        {/* Exibir farmácias fechadas */}
         <Text style={styles.sectionTitle}>Farmácias Fechadas</Text>
-        {farmaciasFechadas.map((farmacia, index) => (
-          <FarmaciaCard
-            key={index}
-            nome={farmacia.nome}
-            endereco={farmacia.endereco}
-            telefone={farmacia.telefone}
-            latitude={farmacia.latitude}
-            longitude={farmacia.longitude}
-            abre={farmacia.abre}
-            fecha={farmacia.fecha}
-            aberta={false} // Farmácia está fechada
-          />
-        ))}
+        {farmaciasFechadas.length > 0 ? (
+          farmaciasFechadas.map((farmacia, index) => (
+            <FarmaciaCard
+              key={index}
+              nome={farmacia.nome}
+              endereco={farmacia.endereco}
+              telefone={farmacia.telefone}
+              latitude={farmacia.latitude}
+              longitude={farmacia.longitude}
+              aberta={false}
+            />
+          ))
+        ) : (
+          <Text style={styles.noFarmaciaText}>Todas as farmácias estão abertas.</Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -182,11 +196,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 20,
+    top: 40,
     left: 20,
   },
   scrollViewContent: {
-    paddingTop: 150, // Deixa espaço para o topo fixo
+    paddingTop: 150,
     paddingHorizontal: 10,
     alignItems: 'center',
   },
@@ -235,6 +249,27 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     alignSelf: 'flex-start',
     marginLeft: 20,
+  },
+  noFarmaciaText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#A80000',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  plantaoButton: {
+    backgroundColor: '#A80000',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 20,
+    width: '80%',
+    alignSelf: 'center',
+  },
+  plantaoButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   expandButton: {
     backgroundColor: '#A80000',

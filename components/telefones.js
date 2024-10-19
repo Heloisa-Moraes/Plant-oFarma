@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 20,
+    top: 40, // Ajuste para alinhar o botão
     left: 20,
   },
   scrollViewContent: {

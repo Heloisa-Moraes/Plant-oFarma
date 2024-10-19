@@ -16,3 +16,6 @@ git config --global user.name Heloisa-Moraes
 git config --global user.email helomoraes2009@hotmail.com 
 
 npx expo start   --localhost --android
+
+
+LEMBRAR SEMPRE DE INICIAR O SERVER.JS EM UM TERMINAL SEPARADO PARA FUNCIONAR A API DE BUSCA DO MONGODB

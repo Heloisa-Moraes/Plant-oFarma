@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 20,
+    top: 40, // Ajuste feito aqui para alinhar com o menu
     left: 20,
   },
   menuContainer: {

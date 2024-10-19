@@ -1,32 +1,31 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { LocationContext } from '../contexts/LocationContext'; // Importa o contexto de localização
+import { LocationContext } from '../contexts/LocationContext';
 
 export default function Informacao() {
   const navigation = useNavigation();
-  const { location } = useContext(LocationContext); // Obtém a localização do contexto
-  const ipServer = '10.0.2.2'; // IP do servidor
+  const { location } = useContext(LocationContext);
+
+  const ipServer = Platform.OS === 'ios' ? '10.0.0.125' : '10.0.2.2'; // Ajuste aqui o IP conforme necessário
+  const fallbackIpServer = 'SEU_IP_PUBLICO_AQUI'; // Substitua pelo seu IP público
 
   const [farmaciaProxima, setFarmaciaProxima] = useState(null);
   const [distancia, setDistancia] = useState(null);
+  const [erroConexao, setErroConexao] = useState(false); // Nova flag para tratar erro de conexão
 
-  // Função para calcular a distância entre dois pontos de latitude e longitude
   const calcularDistancia = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Raio da Terra em km
+    const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLon / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const a = Math.sin(dLat / 2) * Math.sin(dLon / 2) +
+              Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distancia = R * c;
-    return distancia.toFixed(2); // Distância com 2 casas decimais
+    return (R * c).toFixed(2);
   };
 
-  // Função para buscar a farmácia de plantão
   useEffect(() => {
     const buscarFarmaciaDePlantao = async () => {
       if (location) {
@@ -34,26 +33,55 @@ export default function Informacao() {
           const response = await fetch(`http://${ipServer}:3000/farmacias`);
           const farmacias = await response.json();
 
-          // Filtrar farmácias pelo plantão de hoje
           const dataAtual = new Date().toISOString().slice(0, 10);
-          const farmaciaPlantao = farmacias.find(farmacia => farmacia.dataPlantao === dataAtual);
+          const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao.includes(dataAtual));
 
           if (farmaciaPlantao) {
             setFarmaciaProxima(farmaciaPlantao);
 
-            // Calcular a distância
+            // Corrige a ordem de latitude e longitude
+            const [longitude, latitude] = farmaciaPlantao.location.coordinates;
+
             const distanciaCalculada = calcularDistancia(
               location.latitude,
               location.longitude,
-              farmaciaPlantao.latitude,
-              farmaciaPlantao.longitude
+              latitude,
+              longitude
             );
             setDistancia(distanciaCalculada);
           } else {
             console.error('Nenhuma farmácia de plantão foi encontrada para hoje.');
           }
         } catch (error) {
-          console.error('Erro ao buscar farmácias:', error);
+          console.log('Erro ao conectar no IP local, tentando IP público...');
+          
+          try {
+            const response = await fetch(`http://${fallbackIpServer}:3000/farmacias`);
+            const farmacias = await response.json();
+
+            const dataAtual = new Date().toISOString().slice(0, 10);
+            const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao.includes(dataAtual));
+
+            if (farmaciaPlantao) {
+              setFarmaciaProxima(farmaciaPlantao);
+
+              // Corrige a ordem de latitude e longitude
+              const [longitude, latitude] = farmaciaPlantao.location.coordinates;
+
+              const distanciaCalculada = calcularDistancia(
+                location.latitude,
+                location.longitude,
+                latitude,
+                longitude
+              );
+              setDistancia(distanciaCalculada);
+            } else {
+              console.error('Nenhuma farmácia de plantão foi encontrada para hoje.');
+            }
+          } catch (error) {
+            console.error('Erro ao conectar no IP público:', error);
+            setErroConexao(true); // Seta a flag de erro
+          }
         }
       } else {
         console.error('Localização do usuário não disponível.');
@@ -69,7 +97,7 @@ export default function Informacao() {
       return;
     }
 
-    const { latitude, longitude } = farmaciaProxima;
+    const [longitude, latitude] = farmaciaProxima.location.coordinates; // Corrige a ordem das coordenadas
 
     Alert.alert(
       "Abrir Mapa",
@@ -108,18 +136,24 @@ export default function Informacao() {
 
       <View style={styles.alertContainer}>
         <Text style={styles.text}>ATENÇÃO!</Text>
-        <Text style={styles.text}>Farmácia de plantão mais próxima:</Text>
-        {farmaciaProxima ? (
-          <>
-            <Text style={styles.subtext}>{farmaciaProxima.nome}</Text>
-            <Text style={styles.subtext}>{farmaciaProxima.endereco}</Text>
-            <Text style={styles.subtext}>Distância: {distancia} km</Text>
-            <TouchableOpacity style={styles.callButton} onPress={handleOpenMap}>
-              <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
-            </TouchableOpacity>
-          </>
+        {erroConexao ? (
+          <Text style={styles.subtext}>Não foi possível buscar farmácias no momento. Verifique sua conexão.</Text>
         ) : (
-          <Text style={styles.subtext}>Buscando farmácias de plantão próximas...</Text>
+          <>
+            <Text style={styles.text}>Farmácia de plantão mais próxima:</Text>
+            {farmaciaProxima ? (
+              <>
+                <Text style={styles.subtext}>{farmaciaProxima.nome}</Text>
+                <Text style={styles.subtext}>{farmaciaProxima.endereco}</Text>
+                <Text style={styles.subtext}>Distância: {distancia} km</Text>
+                <TouchableOpacity style={styles.callButton} onPress={handleOpenMap}>
+                  <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <Text style={styles.subtext}>Buscando farmácias de plantão próximas...</Text>
+            )}
+          </>
         )}
       </View>
     </View>
@@ -144,11 +178,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
     paddingRight: 20,
-    paddingTop: 20,
+    paddingTop: 40,
   },
   menuButton: {
     position: 'absolute',
-    top: 20,
+    top: 40,
     right: 20,
   },
   alertContainer: {
