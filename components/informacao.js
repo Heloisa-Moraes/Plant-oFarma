@@ -56,7 +56,7 @@ export default function Informacao() {
           console.log('Erro ao conectar no IP local, tentando IP público...');
           
           try {
-            const response = await fetch(`http://${fallbackIpServer}:3000/farmacias`);
+            const response = await fetch(`http://${ipServer}:3000/farmacias`);
             const farmacias = await response.json();
 
             const dataAtual = new Date().toISOString().slice(0, 10);

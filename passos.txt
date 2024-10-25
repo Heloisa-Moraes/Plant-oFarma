@@ -18,4 +18,10 @@ git config --global user.email helomoraes2009@hotmail.com
 npx expo start   --localhost --android
 
 
-LEMBRAR SEMPRE DE INICIAR O SERVER.JS EM UM TERMINAL SEPARADO PARA FUNCIONAR A API DE BUSCA DO MONGODB
+LEMBRAR SEMPRE DE INICIAR O  node SERVER.JS EM UM TERMINAL SEPARADO PARA FUNCIONAR A API DE BUSCA DO MONGODB
+
+
+
+para rodar no navegador:
+
+npx expo start  e apertar w 
