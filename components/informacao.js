@@ -8,8 +8,9 @@ export default function Informacao() {
   const navigation = useNavigation();
   const { location } = useContext(LocationContext);
 
-  // Atualize a URL da API para a nova hospedagem
-  const apiUrl = 'https://servidorbancofarma-production.up.railway.app/api/test'; // URL da sua nova API
+  // Definir IP de conexão dependendo do sistema operacional
+  const ipServer = Platform.OS === 'ios' ? '10.0.0.125' : '10.0.2.2'; // IP local para iOS e Android (emulador)
+  const port = 3000; // Porta onde o servidor está rodando
 
   const [farmaciaProxima, setFarmaciaProxima] = useState(null);
   const [distancia, setDistancia] = useState(null);
@@ -30,15 +31,18 @@ export default function Informacao() {
     const buscarFarmaciaDePlantao = async () => {
       if (location) {
         try {
-          const response = await fetch(`${apiUrl}/farmacias`); // Alterado para usar a nova API
+          // Tentativa de acessar a API usando o IP local
+          const response = await fetch(`http://${ipServer}:${port}/farmacias`);
           const farmacias = await response.json();
 
           const dataAtual = new Date().toISOString().slice(0, 10);
-          const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao.includes(dataAtual));
+          const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao && farmacia.plantao.includes(dataAtual));
+          // anteriormente era const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao.includes(dataAtual)); 
 
           if (farmaciaPlantao) {
             setFarmaciaProxima(farmaciaPlantao);
 
+            // Corrige a ordem de latitude e longitude
             const [longitude, latitude] = farmaciaPlantao.location.coordinates;
 
             const distanciaCalculada = calcularDistancia(
@@ -52,8 +56,36 @@ export default function Informacao() {
             console.error('Nenhuma farmácia de plantão foi encontrada para hoje.');
           }
         } catch (error) {
-          console.error('Erro ao buscar farmácias:', error);
-          setErroConexao(true);
+          console.log('Erro ao conectar no IP local, tentando IP público...');
+
+          try {
+            // Caso falhe, tente o IP público do servidor (se você estiver usando)
+            const response = await fetch(`http://${ipServer}:${port}/farmacias`);
+            const farmacias = await response.json();
+
+            const dataAtual = new Date().toISOString().slice(0, 10);
+            const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao.includes(dataAtual));
+
+            if (farmaciaPlantao) {
+              setFarmaciaProxima(farmaciaPlantao);
+
+              // Corrige a ordem de latitude e longitude
+              const [longitude, latitude] = farmaciaPlantao.location.coordinates;
+
+              const distanciaCalculada = calcularDistancia(
+                location.latitude,
+                location.longitude,
+                latitude,
+                longitude
+              );
+              setDistancia(distanciaCalculada);
+            } else {
+              console.error('Nenhuma farmácia de plantão foi encontrada para hoje.');
+            }
+          } catch (error) {
+            console.error('Erro ao conectar no IP público:', error);
+            setErroConexao(true); // Seta a flag de erro
+          }
         }
       } else {
         console.error('Localização do usuário não disponível.');

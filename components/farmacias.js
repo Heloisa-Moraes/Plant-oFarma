@@ -15,6 +15,15 @@ const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, aberta })
   };
 
   const handleOpenMap = () => {
+    // Log para verificar as coordenadas passadas para o mapa
+    console.log(`Abrindo mapa para: Latitude = ${latitude}, Longitude = ${longitude}`);
+
+    // Verificando se as coordenadas são válidas
+    if (!latitude || !longitude) {
+      Alert.alert("Erro", "Coordenadas inválidas.");
+      return;
+    }
+
     Alert.alert(
       "Abrir Mapa",
       "Deseja abrir o mapa no Google Maps ou Waze?",
@@ -23,14 +32,30 @@ const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, aberta })
           text: "Google Maps",
           onPress: () => {
             const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-            Linking.openURL(url);
+            console.log(`Abrindo Google Maps com a URL: ${url}`);
+            Linking.openURL(url).catch((err) => {
+              console.error("Erro ao abrir o Google Maps:", err);
+              Alert.alert("Erro", "Não foi possível abrir o Google Maps.");
+            });
           }
         },
         {
           text: "Waze",
           onPress: () => {
-            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
-            Linking.openURL(url);
+            let url;
+            if (Platform.OS === 'ios') {
+              url = `waze://?ll=${latitude},${longitude}&navigate=yes`;
+            } else {
+              url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            }
+
+            // Log para verificar a URL gerada
+            console.log(`Abrindo Waze com a URL: ${url}`);
+            
+            Linking.openURL(url).catch((err) => {
+              console.error("Erro ao abrir o Waze:", err);
+              Alert.alert("Erro", "Não foi possível abrir o Waze.");
+            });
           }
         },
         { text: "Cancelar", style: "cancel" }
@@ -89,21 +114,38 @@ export default function Farmacias() {
     const buscarFarmacias = async () => {
       try {
         const response = await fetch(`http://${ipServer}:3000/farmacias`);
+        if (!response.ok) {
+          throw new Error('Erro ao buscar farmácias');
+        }
+  
         const farmacias = await response.json();
-
+  
+        // Verificando as coordenadas de cada farmácia
+        farmacias.forEach((farmacia) => {
+          console.log(`Farmácia: ${farmacia.nome}, Latitude: ${farmacia.latitude}, Longitude: ${farmacia.longitude}`);
+        });
+  
         const agora = new Date();
         const horaAtual = agora.getHours() + agora.getMinutes() / 60;
-
+  
         const abertas = farmacias.filter(farmacia => {
           const [abreHora, abreMinuto] = farmacia.abre.split(':').map(Number);
           const [fechaHora, fechaMinuto] = farmacia.fecha.split(':').map(Number);
-          const horaAbertura = abreHora + abreMinuto / 60;
-          const horaFechamento = fechaHora + fechaMinuto / 60;
+  
+          let horaAbertura = abreHora + abreMinuto / 60;
+          let horaFechamento = fechaHora + fechaMinuto / 60;
+  
+          // Lógica para lidar com horários que cruzam a meia-noite
+          if (horaFechamento < horaAbertura) {
+            // Se a farmácia fecha após a meia-noite
+            return horaAtual >= horaAbertura || horaAtual <= horaFechamento;
+          }
+  
           return horaAtual >= horaAbertura && horaAtual <= horaFechamento;
         });
-
+  
         const fechadas = farmacias.filter(farmacia => !abertas.includes(farmacia));
-
+  
         setFarmaciasAbertas(abertas);
         setFarmaciasFechadas(fechadas);
         setLoading(false);
@@ -112,9 +154,10 @@ export default function Farmacias() {
         setLoading(false);
       }
     };
-
+  
     buscarFarmacias();
   }, []);
+  
 
   const handleNavigateToPlantao = () => {
     navigation.navigate('Informacao');

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const PostoSaudeCard = ({ nome, endereco, telefone }) => {
+const PostoSaudeCard = ({ nome, endereco, telefone, location }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleToggleExpand = () => {
@@ -16,6 +16,22 @@ const PostoSaudeCard = ({ nome, endereco, telefone }) => {
   };
 
   const handleOpenMap = () => {
+    // Verificando se a farmácia tem coordenadas
+    if (!location || !location.coordinates) {
+      console.log('Nenhuma coordenada de farmácia encontrada.');
+      Alert.alert('Coordenadas inválidas ou não encontradas!');
+      return;
+    }
+
+    const [longitude, latitude] = location.coordinates;
+
+    // Verificando se as coordenadas estão corretas
+    if (!latitude || !longitude) {
+      console.log('Coordenadas inválidas!');
+      Alert.alert('Coordenadas inválidas!');
+      return;
+    }
+
     Alert.alert(
       "Abrir Mapa",
       "Deseja abrir o mapa no Google Maps ou Waze?",
@@ -23,14 +39,16 @@ const PostoSaudeCard = ({ nome, endereco, telefone }) => {
         {
           text: "Google Maps",
           onPress: () => {
-            const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
+            const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+            console.log('Google Maps URL:', url);  // Verificando a URL do Google Maps
             Linking.openURL(url);
           }
         },
         {
           text: "Waze",
           onPress: () => {
-            const url = `https://waze.com/ul?ll=${encodeURIComponent(endereco)}&navigate=yes`;
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            console.log('Waze URL:', url);  // Verificando a URL do Waze
             Linking.openURL(url);
           }
         },
@@ -66,16 +84,27 @@ const PostoSaudeCard = ({ nome, endereco, telefone }) => {
 export default function Informacao() {
   const navigation = useNavigation();
 
-  const postos = [
-    { nome: 'UBS DRA. IRACEMA PETRI (PSF)', endereco: 'Av. João Paulo II, 311, Cohab', telefone: '(14) 3604-4073' },
-    { nome: 'POSTO DE SAÚDE DA COHAB', endereco: 'Rua Francisco Angelice, 21, Cohab', telefone: '(14) 3604-4066' },
-    { nome: 'POSTO DE SAÚDE DA VILA CORREIA', endereco: 'Rua Domingos Guedin, 272, Vila Correia', telefone: '(14) 3604-4067' },
-    { nome: 'POSTO DE SAÚDE DO SONHO NOSSO', endereco: 'Rua Leona Pompeu, 201, Sonho Nosso II', telefone: '(14) 3604-4072' },
-    { nome: 'POSTO CENTRAL (CENTRO DE SAÚDE II)', endereco: 'Rua Antonio Franco Pompeu, 302, V. Operária', telefone: '(14) 3604-4070' },
-    { nome: 'POSTO DE SAÚDE DA VILA HABITACIONAL', endereco: 'Rua Fiori Giglioti, 365, V. Habitacional', telefone: '(14) 3604-4065' },
-    { nome: 'UBS DR. MARCÍLIO TOGINI JÚNIOR', endereco: 'Rua João Piva, 431, Jardim da Barra', telefone: '(14) 3604-4077' },
-    { nome: 'POSTO DE SAÚDE CAMPOS SALLES', endereco: 'Rod. SP 255, km 169, Bairro Campos Salles', telefone: '(14) 3604-4069' },
-  ];
+  // Estado para armazenar as farmácias da API
+  const [farmacias, setFarmacias] = useState([]);
+  const [loading, setLoading] = useState(true);  // Estado de carregamento
+
+  useEffect(() => {
+    const fetchFarmacias = async () => {
+      try {
+        // Fazendo a requisição para a API
+        const response = await fetch('http://10.0.0.125:3000/farmacias'); // Ajuste o IP conforme necessário
+        const data = await response.json();
+
+        setFarmacias(data);  // Armazenando as farmácias no estado
+      } catch (error) {
+        console.error('Erro ao carregar farmácias:', error);
+      } finally {
+        setLoading(false);  // Desativa o estado de carregamento
+      }
+    };
+
+    fetchFarmacias();
+  }, []);  // A requisição será feita apenas uma vez quando a tela for carregada
 
   const handleBackPress = () => {
     navigation.goBack(); // Volta para a tela anterior
@@ -90,18 +119,24 @@ export default function Informacao() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {postos.map((posto, index) => (
-          <PostoSaudeCard
-            key={index}
-            nome={posto.nome}
-            endereco={posto.endereco}
-            telefone={posto.telefone}
-          />
-        ))}
+        {loading ? (
+          <Text style={styles.loadingText}>Carregando farmácias...</Text>  // Exibe mensagem enquanto carrega
+        ) : (
+          farmacias.map((farmacia, index) => (
+            <PostoSaudeCard
+              key={index}
+              nome={farmacia.nome}
+              endereco={farmacia.endereco}
+              telefone={farmacia.telefone}
+              location={farmacia.location} // Passando a localização para o componente
+            />
+          ))
+        )}
       </ScrollView>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -183,5 +218,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  loadingText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 50,
   },
 });
