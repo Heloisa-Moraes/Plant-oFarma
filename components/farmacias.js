@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Linking, P
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
+
 const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, aberta }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -122,7 +123,7 @@ export default function Farmacias() {
   
         // Verificando as coordenadas de cada farmácia
         farmacias.forEach((farmacia) => {
-          console.log(`Farmácia: ${farmacia.nome}, Latitude: ${farmacia.latitude}, Longitude: ${farmacia.longitude}`);
+          console.log(`Farmácia: ${farmacia.nome}, Latitude: ${farmacia.location.coordinates[0]}, Longitude: ${farmacia.location.coordinates[1]}`);
         });
   
         const agora = new Date();
@@ -184,8 +185,8 @@ export default function Farmacias() {
               nome={farmacia.nome}
               endereco={farmacia.endereco}
               telefone={farmacia.telefone}
-              latitude={farmacia.latitude}
-              longitude={farmacia.longitude}
+              latitude={farmacia.location.coordinates[1]}
+              longitude={farmacia.location.coordinates[0]}
               aberta={true}
             />
           ))
@@ -206,9 +207,9 @@ export default function Farmacias() {
               nome={farmacia.nome}
               endereco={farmacia.endereco}
               telefone={farmacia.telefone}
-              latitude={farmacia.latitude}
-              longitude={farmacia.longitude}
-              aberta={false}
+              latitude={farmacia.location.coordinates[1]}
+              longitude={farmacia.location.coordinates[0]}
+              aberta={true}
             />
           ))
         ) : (

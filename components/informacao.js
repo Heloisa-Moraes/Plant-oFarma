@@ -9,7 +9,13 @@ export default function Informacao() {
   const { location } = useContext(LocationContext);
 
   // Definir IP de conexão dependendo do sistema operacional
-  const ipServer = Platform.OS === 'ios' ? '10.0.0.125' : '10.0.2.2'; // IP local para iOS e Android (emulador)
+  let ipServer = 'locaslhost'
+  if(Platform.OS === 'ios'){
+    ipServer = '10.0.0.125'
+  } else if(Platform.OS === 'android'){
+    ipServer = '10.0.2.2'
+  }
+  // const ipServer = Platform.OS === 'ios' ? '10.0.0.125' : '10.0.2.2'; // IP local para iOS e Android (emulador)
   const port = 3000; // Porta onde o servidor está rodando
 
   const [farmaciaProxima, setFarmaciaProxima] = useState(null);
@@ -149,7 +155,7 @@ export default function Informacao() {
               <>
                 <Text style={styles.subtext}>{farmaciaProxima.nome}</Text>
                 <Text style={styles.subtext}>{farmaciaProxima.endereco}</Text>
-                <Text style={styles.subtext}>Distância: {distancia} km</Text>
+                <Text style={styles.subtext}>Distância: {distancia}km em linha reta</Text>
                 <TouchableOpacity style={styles.callButton} onPress={handleOpenMap}>
                   <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
                 </TouchableOpacity>
