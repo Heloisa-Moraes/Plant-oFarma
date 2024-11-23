@@ -24,9 +24,10 @@ async function connect() {
     throw err;  // Re-throw para que o servidor não seja iniciado sem a conexão
   }
 }
+
 // Rota para a raiz "/"
 app.get('/', (req, res) => {
-  res.status(200).send('API funcionando! Acesse /farmacias para ver a lista de farmácias.');
+  res.status(200).send('API funcionando! Acesse /farmacias para ver a lista de farmácias ou /postos para ver a lista de postos de saúde.');
 });
 
 // Rota GET para obter todas as farmácias
@@ -38,6 +39,18 @@ app.get('/farmacias', async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar farmácias:", error);
     res.status(500).json({ error: "Erro ao buscar farmácias" });
+  }
+});
+
+// Rota GET para obter todos os postos de saúde
+app.get('/postos', async (req, res) => {
+  try {
+    const db = client.db("plantaoFarmaDB");
+    const postos = await db.collection("Postos").find({}).toArray();
+    res.status(200).json(postos);
+  } catch (error) {
+    console.error("Erro ao buscar postos de saúde:", error);
+    res.status(500).json({ error: "Erro ao buscar postos de saúde" });
   }
 });
 

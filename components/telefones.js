@@ -1,10 +1,9 @@
-import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useState, useEffect } from 'react';
 
-const PostoSaudeCard = ({ nome, endereco, telefone, location }) => {
+const PostoSaudeCard = ({ nome, endereco, telefone, latitude, longitude }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleToggleExpand = () => {
@@ -16,19 +15,10 @@ const PostoSaudeCard = ({ nome, endereco, telefone, location }) => {
   };
 
   const handleOpenMap = () => {
-    // Verificando se a farmácia tem coordenadas
-    if (!location || !location.coordinates) {
-      console.log('Nenhuma coordenada de farmácia encontrada.');
-      Alert.alert('Coordenadas inválidas ou não encontradas!');
-      return;
-    }
+    console.log(`Abrindo mapa para: Latitude = ${latitude}, Longitude = ${longitude}`);
 
-    const [longitude, latitude] = location.coordinates;
-
-    // Verificando se as coordenadas estão corretas
     if (!latitude || !longitude) {
-      console.log('Coordenadas inválidas!');
-      Alert.alert('Coordenadas inválidas!');
+      Alert.alert("Erro", "Coordenadas inválidas.");
       return;
     }
 
@@ -40,16 +30,28 @@ const PostoSaudeCard = ({ nome, endereco, telefone, location }) => {
           text: "Google Maps",
           onPress: () => {
             const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-            console.log('Google Maps URL:', url);  // Verificando a URL do Google Maps
-            Linking.openURL(url);
+            console.log(`Abrindo Google Maps com a URL: ${url}`);
+            Linking.openURL(url).catch((err) => {
+              console.error("Erro ao abrir o Google Maps:", err);
+              Alert.alert("Erro", "Não foi possível abrir o Google Maps.");
+            });
           }
         },
         {
           text: "Waze",
           onPress: () => {
-            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
-            console.log('Waze URL:', url);  // Verificando a URL do Waze
-            Linking.openURL(url);
+            let url;
+            if (Platform.OS === 'ios') {
+              url = `waze://?ll=${latitude},${longitude}&navigate=yes`;
+            } else {
+              url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            }
+
+            console.log(`Abrindo Waze com a URL: ${url}`);
+            Linking.openURL(url).catch((err) => {
+              console.error("Erro ao abrir o Waze:", err);
+              Alert.alert("Erro", "Não foi possível abrir o Waze.");
+            });
           }
         },
         { text: "Cancelar", style: "cancel" }
@@ -61,9 +63,11 @@ const PostoSaudeCard = ({ nome, endereco, telefone, location }) => {
     <View style={styles.card}>
       <Text style={styles.title}>{nome}</Text>
       <Text style={styles.info}>{endereco}</Text>
+
       <TouchableOpacity style={styles.expandButton} onPress={handleToggleExpand}>
         <Text style={styles.buttonText}>{expanded ? 'Mostrar Menos' : 'Saber Mais'}</Text>
       </TouchableOpacity>
+
       {expanded && (
         <>
           <Text style={styles.info}>Telefone: {telefone}</Text>
@@ -81,33 +85,48 @@ const PostoSaudeCard = ({ nome, endereco, telefone, location }) => {
   );
 };
 
-export default function Informacao() {
+export default function TelefoneScreen() {
   const navigation = useNavigation();
+  const [postos, setPostos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Estado para armazenar as farmácias da API
-  const [farmacias, setFarmacias] = useState([]);
-  const [loading, setLoading] = useState(true);  // Estado de carregamento
+  const getServerIp = () => {
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      return '10.0.0.125';  // IP da sua máquina
+    } else {
+      return 'localhost';
+    }
+  };
+
+  const ipServer = getServerIp();
 
   useEffect(() => {
-    const fetchFarmacias = async () => {
+    const fetchPostos = async () => {
       try {
-        // Fazendo a requisição para a API
-        const response = await fetch('http://10.0.0.125:3000/farmacias'); // Ajuste o IP conforme necessário
-        const data = await response.json();
+        const response = await fetch(`http://${ipServer}:3000/postos`);
+        if (!response.ok) {
+          throw new Error('Erro ao buscar postos');
+        }
 
-        setFarmacias(data);  // Armazenando as farmácias no estado
+        const postosData = await response.json();
+
+        postosData.forEach((posto) => {
+          console.log(`Posto: ${posto.nome}, Latitude: ${posto.location.coordinates[1]}, Longitude: ${posto.location.coordinates[0]}`);
+        });
+
+        setPostos(postosData);
+        setLoading(false);
       } catch (error) {
-        console.error('Erro ao carregar farmácias:', error);
-      } finally {
-        setLoading(false);  // Desativa o estado de carregamento
+        console.error('Erro ao buscar postos de saúde:', error);
+        setLoading(false);
       }
     };
 
-    fetchFarmacias();
-  }, []);  // A requisição será feita apenas uma vez quando a tela for carregada
+    fetchPostos();
+  }, []);
 
   const handleBackPress = () => {
-    navigation.goBack(); // Volta para a tela anterior
+    navigation.goBack();
   };
 
   return (
@@ -119,16 +138,18 @@ export default function Informacao() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.sectionTitle}>Postos de Saúde</Text>
         {loading ? (
-          <Text style={styles.loadingText}>Carregando farmácias...</Text>  // Exibe mensagem enquanto carrega
+          <Text style={styles.loadingText}>Carregando postos de saúde...</Text>
         ) : (
-          farmacias.map((farmacia, index) => (
+          postos.map((posto, index) => (
             <PostoSaudeCard
               key={index}
-              nome={farmacia.nome}
-              endereco={farmacia.endereco}
-              telefone={farmacia.telefone}
-              location={farmacia.location} // Passando a localização para o componente
+              nome={posto.nome}
+              endereco={posto.endereco}
+              telefone={posto.telefone}
+              latitude={posto.location.coordinates[1]}  // Latitude
+              longitude={posto.location.coordinates[0]} // Longitude
             />
           ))
         )}
@@ -136,7 +157,6 @@ export default function Informacao() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -158,11 +178,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 40, // Ajuste para alinhar o botão
+    top: 40,
     left: 20,
   },
   scrollViewContent: {
-    paddingTop: 150, // Deixa espaço para o topo fixo
+    paddingTop: 150,
     paddingHorizontal: 10,
     alignItems: 'center',
   },
@@ -188,6 +208,50 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     marginVertical: 5,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  statusIndicator: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  statusText: {
+    fontSize: 16,
+    marginLeft: 8,
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#A80000',
+    marginVertical: 15,
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+  },
+  noFarmaciaText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#A80000',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  plantaoButton: {
+    backgroundColor: '#A80000',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 20,
+    width: '80%',
+    alignSelf: 'center',
+  },
+  plantaoButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   expandButton: {
     backgroundColor: '#A80000',
@@ -218,10 +282,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  loadingText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 50,
   },
 });

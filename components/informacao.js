@@ -9,11 +9,11 @@ export default function Informacao() {
   const { location } = useContext(LocationContext);
 
   // Definir IP de conexão dependendo do sistema operacional
-  let ipServer = 'locaslhost'
+  let ipServer = 'localhost'
   if(Platform.OS === 'ios'){
     ipServer = '10.0.0.125'
   } else if(Platform.OS === 'android'){
-    ipServer = '10.0.2.2'
+    ipServer = '192.168.77.97'
   }
   // const ipServer = Platform.OS === 'ios' ? '10.0.0.125' : '10.0.2.2'; // IP local para iOS e Android (emulador)
   const port = 3000; // Porta onde o servidor está rodando
@@ -47,7 +47,7 @@ export default function Informacao() {
 
           if (farmaciaPlantao) {
             setFarmaciaProxima(farmaciaPlantao);
-
+            
             // Corrige a ordem de latitude e longitude
             const [longitude, latitude] = farmaciaPlantao.location.coordinates;
 
@@ -65,6 +65,7 @@ export default function Informacao() {
           console.log('Erro ao conectar no IP local, tentando IP público...');
 
           try {
+            console.log(3);
             // Caso falhe, tente o IP público do servidor (se você estiver usando)
             const response = await fetch(`http://${ipServer}:${port}/farmacias`);
             const farmacias = await response.json();
