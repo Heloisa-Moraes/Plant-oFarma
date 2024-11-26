@@ -11,7 +11,7 @@ export default function Informacao() {
   // Definir IP de conexão dependendo do sistema operacional
   let ipServer = 'localhost'
   if(Platform.OS === 'ios'){
-    ipServer = '10.0.0.125'
+    ipServer = '172.20.10.5'
   } else if(Platform.OS === 'android'){
     ipServer = '192.168.77.97'
   }

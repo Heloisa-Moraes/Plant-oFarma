@@ -92,7 +92,7 @@ export default function TelefoneScreen() {
 
   const getServerIp = () => {
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      return '10.0.0.125';  // IP da sua máquina
+      return '172.20.10.5';  // IP da sua máquina
     } else {
       return 'localhost';
     }

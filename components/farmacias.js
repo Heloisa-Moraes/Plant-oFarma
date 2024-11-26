@@ -103,7 +103,7 @@ export default function Farmacias() {
 
   const getServerIp = () => {
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      return '10.0.0.125';  // Use o IP da sua máquina aqui
+      return '172.20.10.5';  // Use o IP da sua máquina aqui
     } else {
       return 'localhost';
     }
@@ -118,7 +118,6 @@ export default function Farmacias() {
         if (!response.ok) {
           throw new Error('Erro ao buscar farmácias');
         }
-  
         const farmacias = await response.json();
   
         // Verificando as coordenadas de cada farmácia
@@ -146,7 +145,6 @@ export default function Farmacias() {
         });
   
         const fechadas = farmacias.filter(farmacia => !abertas.includes(farmacia));
-  
         setFarmaciasAbertas(abertas);
         setFarmaciasFechadas(fechadas);
         setLoading(false);
@@ -209,7 +207,7 @@ export default function Farmacias() {
               telefone={farmacia.telefone}
               latitude={farmacia.location.coordinates[1]}
               longitude={farmacia.location.coordinates[0]}
-              aberta={true}
+              aberta={false}
             />
           ))
         ) : (
