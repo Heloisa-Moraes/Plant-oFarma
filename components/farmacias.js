@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import getServerIp from '../config';
 
 
 const FarmaciaCard = ({ nome, endereco, telefone, latitude, longitude, aberta }) => {
@@ -101,17 +102,17 @@ export default function Farmacias() {
   const [farmaciasFechadas, setFarmaciasFechadas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getServerIp = () => {
-    if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      return '172.20.10.5';  // Use o IP da sua máquina aqui
-    } else {
-      return 'localhost';
-    }
-  };
+  // const getServerIp = () => {
+  //   if (Platform.OS === 'ios' || Platform.OS === 'android') {
+  //     return '172.20.10.5';  // Use o IP da sua máquina aqui
+  //   } else {
+  //     return 'localhost';
+  //   }
+  // };
 
-  const ipServer = getServerIp();
 
   useEffect(() => {
+    const ipServer = getServerIp();
     const buscarFarmacias = async () => {
       try {
         const response = await fetch(`http://${ipServer}:3000/farmacias`);
