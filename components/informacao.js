@@ -1,27 +1,26 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Platform, Image, ImageBackground} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { LocationContext } from '../contexts/LocationContext';
+import getServerIp from '../config';
 
 export default function Informacao() {
   const navigation = useNavigation();
   const { location } = useContext(LocationContext);
-
-
-  // Definir IP de conexão dependendo do sistema operacional
-  let ipServer = 'localhost'
-  if(Platform.OS === 'ios'){
-    ipServer = '172.20.10.5'
-  } else if(Platform.OS === 'android'){
-    ipServer = '192.168.77.97'
-  }
-  // const ipServer = Platform.OS === 'ios' ? '10.0.0.125' : '10.0.2.2'; // IP local para iOS e Android (emulador)
   const port = 3000; // Porta onde o servidor está rodando
 
   const [farmaciaProxima, setFarmaciaProxima] = useState(null);
   const [distancia, setDistancia] = useState(null);
   const [erroConexao, setErroConexao] = useState(false);
+
+  const handleCall = () => {
+    Linking.openURL(`tel:${farmaciaProxima.telefone}`);
+  };
+
+  // const image = {uri: 'https://legacy.reactjs.org/logo-og.png'};
+  const image = {uri: require('../img/mapa.png')};
+
 
   const calcularDistancia = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -35,6 +34,7 @@ export default function Informacao() {
   };
 
   useEffect(() => {
+    const ipServer = getServerIp();
     const buscarFarmaciaDePlantao = async () => {
       if (location) {
         try {
@@ -145,6 +145,7 @@ export default function Informacao() {
           <Ionicons name="menu" size={40} color="#fff" />
         </TouchableOpacity>
       </View>
+      
 
       <View style={styles.alertContainer}>
         <Text style={styles.text}>ATENÇÃO!</Text>
@@ -168,6 +169,13 @@ export default function Informacao() {
           </>
         )}
       </View>
+      <View style={styles.bottonCircle}>
+        <ImageBackground style={{flex: 1, justifyContent: 'center'}} 
+          source={image} resizeMode="cover">
+            {/* require('../img/mapa.png') */}
+        </ImageBackground>
+
+     </View>
     </View>
   );
 }
@@ -191,6 +199,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingRight: 20,
     paddingTop: 40,
+  },
+  bottonCircle: {
+    width: '100%',
+    height: 300,
+    backgroundColor: 'blue',
+    borderTopLeftRadius: 150,
+    borderTopRightRadius: 150,
+    // top: 0,
+    // justifyContent: 'flex-start',
+    // alignItems: 'flex-end',
+    // paddingRight: 20,
+    // paddingTop: 40,
   },
   menuButton: {
     position: 'absolute',
