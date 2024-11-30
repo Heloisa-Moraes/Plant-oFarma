@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   noFarmaciaText: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#A80000',
     marginBottom: 10,
@@ -302,7 +302,8 @@ const styles = StyleSheet.create({
   },
   plantaoButton: {
     backgroundColor: '#A80000',
-    paddingVertical: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 20,
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
   },
   plantaoButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   expandButton: {

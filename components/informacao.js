@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Platform, Image, ImageBackground} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Platform, Image, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { LocationContext } from '../contexts/LocationContext';
@@ -19,16 +19,15 @@ export default function Informacao() {
   };
 
   // const image = {uri: 'https://legacy.reactjs.org/logo-og.png'};
-  const image = {uri: require('../img/mapa.png')};
-
+  const image = { uri: require('../img/mapa.png') };
 
   const calcularDistancia = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a = Math.sin(dLat / 2) * Math.sin(dLon / 2) +
-              Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return (R * c).toFixed(2);
   };
@@ -44,11 +43,10 @@ export default function Informacao() {
 
           const dataAtual = new Date().toISOString().slice(0, 10);
           const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao && farmacia.plantao.includes(dataAtual));
-          // anteriormente era const farmaciaPlantao = farmacias.find(farmacia => farmacia.plantao.includes(dataAtual)); 
 
           if (farmaciaPlantao) {
             setFarmaciaProxima(farmaciaPlantao);
-            
+
             // Corrige a ordem de latitude e longitude
             const [longitude, latitude] = farmaciaPlantao.location.coordinates;
 
@@ -145,7 +143,6 @@ export default function Informacao() {
           <Ionicons name="menu" size={40} color="#fff" />
         </TouchableOpacity>
       </View>
-      
 
       <View style={styles.alertContainer}>
         <Text style={styles.text}>ATENÇÃO!</Text>
@@ -158,9 +155,9 @@ export default function Informacao() {
               <>
                 <Text style={styles.subtext}>{farmaciaProxima.nome}</Text>
                 <Text style={styles.subtext}>{farmaciaProxima.endereco}</Text>
-                
-                <TouchableOpacity style={styles.callButton} onPress={handleOpenMap}>
-                  <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+
+                <TouchableOpacity style={styles.callButton} onPress={handleCall}>
+                  <Text style={styles.callButtonText}>CLIQUE PARA LIGAR</Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -169,13 +166,18 @@ export default function Informacao() {
           </>
         )}
       </View>
-      <View style={styles.bottonCircle}>
-        <ImageBackground style={{flex: 1, justifyContent: 'center'}} 
-          source={image} resizeMode="cover">
-            {/* require('../img/mapa.png') */}
-        </ImageBackground>
 
-     </View>
+      <View style={styles.bottonCircle}>
+        <ImageBackground
+          style={styles.imageBackground}
+          source={require('../img/mapa.png')}
+          resizeMode="cover">
+          {/* Substituímos o texto por um botão aqui */}
+          <TouchableOpacity style={styles.callButton} onPress={handleOpenMap}>
+            <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
+          </TouchableOpacity>
+        </ImageBackground>
+      </View>
     </View>
   );
 }
@@ -206,11 +208,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     borderTopLeftRadius: 150,
     borderTopRightRadius: 150,
-    // top: 0,
-    // justifyContent: 'flex-start',
-    // alignItems: 'flex-end',
-    // paddingRight: 20,
-    // paddingTop: 40,
+    overflow: 'hidden', // Faz com que a imagem se ajuste ao formato de meia-lua
+  },
+  imageBackground: {
+    flex: 1,
+    justifyContent: 'center',  // Garante que o conteúdo da imagem esteja centralizado
+    alignItems: 'center',
   },
   menuButton: {
     position: 'absolute',
@@ -219,7 +222,7 @@ const styles = StyleSheet.create({
   },
   alertContainer: {
     backgroundColor: '#A80000',
-    padding: 20, //antes estava 20
+    padding: 20,
     borderRadius: 20,
     alignItems: 'center',
     marginBottom: 20,
@@ -232,39 +235,38 @@ const styles = StyleSheet.create({
     marginTop: 180,
   },
   text: {
-    fontSize: 30, //alterado o tamanho da letra 
+    fontSize: 30, // Alterado o tamanho da letra
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 14,
     textAlign: 'center',
   },
   subtext: {
-    fontSize: 28, 
-    color: '#FFFFFF', 
-    marginBottom: 10, 
-    textAlign: 'center', 
-    fontWeight: 'bold', // Destaca o texto com maior peso
-    textShadowColor: 'rgba(0, 0, 0, 9.5)', // Adiciona uma sombra discreta
-    textShadowOffset: { width: 2, height: 2 }, 
-    textShadowRadius: 4, 
+    fontSize: 28,
+    color: '#FFFFFF',
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 9.5)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
   callButton: {
-    backgroundColor: '#FFFFFF', // Fundo branco para contraste
+    backgroundColor: '#FFFFFF',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 20,
     width: '80%',
-    borderWidth: 2, // Adiciona uma borda para complementar
-    borderColor: '#A80000', // Borda da mesma cor do texto
-    
+    borderWidth: 2,
+    borderColor: '#A80000',
   },
   callButtonText: {
-    color: '#A80000', // Texto vermelho para manter o tema
+    color: '#A80000',
     fontSize: 20,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)', // Adiciona uma sombra discreta
-    textShadowOffset: { width: 2, height: 2 }, 
-    textShadowRadius: 4, 
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
 });

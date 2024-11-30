@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import getServerIp from '../config';
 
 const PostoSaudeCard = ({ nome, endereco, telefone, latitude, longitude }) => {
   const [expanded, setExpanded] = useState(false);
@@ -90,17 +91,10 @@ export default function TelefoneScreen() {
   const [postos, setPostos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getServerIp = () => {
-    if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      return '172.20.10.5';  // IP da sua máquina
-    } else {
-      return 'localhost';
-    }
-  };
-
-  const ipServer = getServerIp();
+  const port = 3000; // Porta onde o servidor está rodando 
 
   useEffect(() => {
+    const ipServer = getServerIp();
     const fetchPostos = async () => {
       try {
         const response = await fetch(`http://${ipServer}:3000/postos`);
