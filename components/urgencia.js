@@ -18,7 +18,7 @@ export default function Urgencia() {
     <View style={styles.container}>
       <View style={styles.topCircle}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={32} color="#fff" />
+          <Ionicons name="arrow-back" size={40} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 35,
     fontWeight: 'bold',
     color: '#A80000',
     marginBottom: 20,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   info: {
-    fontSize: 18,
+    fontSize: 25,
     color: '#333',
     marginBottom: 10,
   },
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   callButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 25,
     fontWeight: 'bold',
   },
 });

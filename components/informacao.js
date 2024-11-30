@@ -8,6 +8,7 @@ export default function Informacao() {
   const navigation = useNavigation();
   const { location } = useContext(LocationContext);
 
+
   // Definir IP de conexão dependendo do sistema operacional
   let ipServer = 'localhost'
   if(Platform.OS === 'ios'){
@@ -141,7 +142,7 @@ export default function Informacao() {
     <View style={styles.container}>
       <View style={styles.topCircle}>
         <TouchableOpacity style={styles.menuButton} onPress={handleMenuPress}>
-          <Ionicons name="menu" size={32} color="#fff" />
+          <Ionicons name="menu" size={40} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -156,7 +157,7 @@ export default function Informacao() {
               <>
                 <Text style={styles.subtext}>{farmaciaProxima.nome}</Text>
                 <Text style={styles.subtext}>{farmaciaProxima.endereco}</Text>
-                <Text style={styles.subtext}>Distância: {distancia}km em linha reta</Text>
+                
                 <TouchableOpacity style={styles.callButton} onPress={handleOpenMap}>
                   <Text style={styles.callButtonText}>CLIQUE PARA ABRIR NO MAPA</Text>
                 </TouchableOpacity>
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
   alertContainer: {
     backgroundColor: '#A80000',
-    padding: 20,
+    padding: 20, //antes estava 20
     borderRadius: 20,
     alignItems: 'center',
     marginBottom: 20,
@@ -211,29 +212,39 @@ const styles = StyleSheet.create({
     marginTop: 180,
   },
   text: {
-    fontSize: 22,
+    fontSize: 30, //alterado o tamanho da letra 
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 10,
+    marginBottom: 14,
     textAlign: 'center',
   },
   subtext: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginBottom: 10,
-    textAlign: 'center',
+    fontSize: 28, 
+    color: '#FFFFFF', 
+    marginBottom: 10, 
+    textAlign: 'center', 
+    fontWeight: 'bold', // Destaca o texto com maior peso
+    textShadowColor: 'rgba(0, 0, 0, 9.5)', // Adiciona uma sombra discreta
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 4, 
   },
   callButton: {
-    backgroundColor: '#A80000',
+    backgroundColor: '#FFFFFF', // Fundo branco para contraste
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 20,
     width: '80%',
+    borderWidth: 2, // Adiciona uma borda para complementar
+    borderColor: '#A80000', // Borda da mesma cor do texto
+    
   },
   callButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+    color: '#A80000', // Texto vermelho para manter o tema
+    fontSize: 20,
     fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)', // Adiciona uma sombra discreta
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 4, 
   },
 });

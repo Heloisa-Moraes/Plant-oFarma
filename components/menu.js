@@ -18,7 +18,7 @@ export default function Menu() {
     <View style={styles.container}>
       <View style={styles.topCircle}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={32} color="#fff" />
+          <Ionicons name="arrow-back" size={40} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -27,7 +27,7 @@ export default function Menu() {
           style={styles.menuItem} 
           onPress={() => handleNavigate('Telefones')}
         >
-          <Ionicons name="call" size={24} color="white" />
+          <Ionicons name="call" size={35} color="white" />
           <Text style={styles.menuText}>TELEFONES ÚTEIS</Text>
         </TouchableOpacity>
 
@@ -35,7 +35,7 @@ export default function Menu() {
           style={styles.menuItem} 
           onPress={() => handleNavigate('Urgencia')}
         >
-          <Ionicons name="medkit" size={24} color="white" />
+          <Ionicons name="medkit" size={35} color="white" />
           <Text style={styles.menuText}>URGÊNCIA</Text>
         </TouchableOpacity>
 
@@ -43,13 +43,13 @@ export default function Menu() {
           style={styles.menuItem} 
           onPress={() => handleNavigate('Farmacias')}
         >
-          <Ionicons name="home" size={24} color="white" />
+          <Ionicons name="home" size={35} color="white" />
           <Text style={styles.menuText}>+FARMÁCIAS</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.plusButtonContainer}>
-        <Ionicons name="add-circle-outline" size={64} color="white" />
+        <Ionicons name="add-circle-outline" size={94} color="#A80000" />
       </View>
     </View>
   );
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 30, //alterado o tamanho da letra 
     fontWeight: 'bold',
     marginLeft: 10,
   },

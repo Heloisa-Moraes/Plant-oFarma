@@ -133,7 +133,7 @@ export default function TelefoneScreen() {
     <View style={styles.container}>
       <View style={styles.topCircle}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={32} color="#fff" />
+          <Ionicons name="arrow-back" size={40} color="#fff" /> 
         </TouchableOpacity>
       </View>
 
@@ -200,12 +200,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#A80000',
   },
   info: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#333',
     marginVertical: 5,
   },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 35,
     fontWeight: 'bold',
     color: '#A80000',
     marginVertical: 15,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 25,
     fontWeight: 'bold',
   },
   actions: {
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
   },
 });
