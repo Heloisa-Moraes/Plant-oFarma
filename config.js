@@ -2,9 +2,9 @@ import { Platform } from 'react-native';
 
 // config.js
 const KEYS = {
-    IP_SERVER_BASE: '10.0.0.125',
-    IP_SERVER_ANDROID: '10.0.0.125',
-    IP_SERVER_IOS: '10.0.0.125',
+    IP_SERVER_BASE: '172.20.10.5',
+    IP_SERVER_ANDROID: '172.20.10.5',
+    IP_SERVER_IOS: '172.20.10.5',
 }
 
 const getServerIp = () => {
